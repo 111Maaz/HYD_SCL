@@ -1,0 +1,53 @@
+| table_schema | table_name          | ordinal_position | column_name    | data_type                | is_nullable | column_default    |
+| ------------ | ------------------- | ---------------- | -------------- | ------------------------ | ----------- | ----------------- |
+| public       | admission_enquiries | 1                | id             | uuid                     | NO          | gen_random_uuid() |
+| public       | admission_enquiries | 2                | parent_name    | text                     | NO          | null              |
+| public       | admission_enquiries | 3                | email          | text                     | NO          | null              |
+| public       | admission_enquiries | 4                | phone          | text                     | NO          | null              |
+| public       | admission_enquiries | 5                | student_name   | text                     | NO          | null              |
+| public       | admission_enquiries | 6                | grade          | text                     | NO          | null              |
+| public       | admission_enquiries | 7                | message        | text                     | YES         | null              |
+| public       | admission_enquiries | 8                | created_at     | timestamp with time zone | NO          | now()             |
+| public       | admission_enquiries | 9                | status         | text                     | NO          | 'New'::text       |
+| public       | admission_enquiries | 10               | notes          | text                     | YES         | null              |
+| public       | class_materials     | 1                | id             | uuid                     | NO          | gen_random_uuid() |
+| public       | class_materials     | 2                | class_number   | integer                  | NO          | null              |
+| public       | class_materials     | 3                | title          | text                     | NO          | null              |
+| public       | class_materials     | 4                | subject        | text                     | NO          | null              |
+| public       | class_materials     | 5                | description    | text                     | NO          | ''::text          |
+| public       | class_materials     | 6                | file_url       | text                     | NO          | null              |
+| public       | class_materials     | 7                | file_name      | text                     | NO          | null              |
+| public       | class_materials     | 8                | created_at     | timestamp with time zone | NO          | now()             |
+| public       | class_materials     | 9                | updated_at     | timestamp with time zone | NO          | now()             |
+| public       | class_materials     | 10               | uploaded_by    | uuid                     | YES         | null              |
+| public       | faculty_members     | 1                | id             | uuid                     | NO          | gen_random_uuid() |
+| public       | faculty_members     | 2                | name           | text                     | NO          | null              |
+| public       | faculty_members     | 3                | role           | text                     | NO          | null              |
+| public       | faculty_members     | 4                | bio            | text                     | YES         | null              |
+| public       | faculty_members     | 5                | photo_url      | text                     | YES         | null              |
+| public       | faculty_members     | 6                | initials       | text                     | YES         | null              |
+| public       | faculty_members     | 7                | accent         | text                     | YES         | null              |
+| public       | faculty_members     | 8                | display_order  | integer                  | NO          | 0                 |
+| public       | faculty_members     | 9                | is_active      | boolean                  | NO          | true              |
+| public       | faculty_members     | 10               | created_at     | timestamp with time zone | NO          | now()             |
+| public       | faculty_profiles    | 1                | id             | uuid                     | NO          | gen_random_uuid() |
+| public       | faculty_profiles    | 2                | user_id        | uuid                     | NO          | null              |
+| public       | faculty_profiles    | 3                | name           | text                     | NO          | null              |
+| public       | faculty_profiles    | 4                | role           | text                     | NO          | null              |
+| public       | faculty_profiles    | 5                | bio            | text                     | YES         | null              |
+| public       | faculty_profiles    | 6                | photo_url      | text                     | YES         | null              |
+| public       | faculty_profiles    | 7                | assigned_class | integer                  | NO          | null              |
+| public       | faculty_profiles    | 8                | created_at     | timestamp with time zone | NO          | now()             |
+| public       | faculty_profiles    | 9                | updated_at     | timestamp with time zone | NO          | now()             |
+| public       | faculty_profiles    | 10               | is_active      | boolean                  | NO          | true              |
+| public       | gallery_images      | 1                | id             | uuid                     | NO          | gen_random_uuid() |
+| public       | gallery_images      | 2                | image_url      | text                     | NO          | null              |
+| public       | gallery_images      | 3                | caption        | text                     | NO          | null              |
+| public       | gallery_images      | 4                | span_class     | text                     | YES         | null              |
+| public       | gallery_images      | 5                | display_order  | integer                  | NO          | 0                 |
+| public       | gallery_images      | 6                | is_active      | boolean                  | NO          | true              |
+| public       | gallery_images      | 7                | created_at     | timestamp with time zone | NO          | now()             |
+| public       | users               | 1                | id             | uuid                     | NO          | null              |
+| public       | users               | 2                | email          | text                     | NO          | null              |
+| public       | users               | 3                | role           | text                     | NO          | null              |
+| public       | users               | 4                | created_at     | timestamp with time zone | NO          | now()             |

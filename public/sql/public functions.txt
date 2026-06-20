@@ -1,0 +1,51 @@
+| schema_name | function_name              | function_definition                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ----------- | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| public      | get_faculty_assigned_class | CREATE OR REPLACE FUNCTION public.get_faculty_assigned_class()
+ RETURNS integer
+ LANGUAGE sql
+ STABLE SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+  SELECT assigned_class FROM public.faculty_profiles WHERE user_id = auth.uid() LIMIT 1;
+$function$
+                                                                                                                                                                                                                                                                                    |
+| public      | handle_new_auth_user       | CREATE OR REPLACE FUNCTION public.handle_new_auth_user()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+  user_role TEXT;
+BEGIN
+  user_role := COALESCE(NEW.raw_user_meta_data->>'role', 'faculty');
+  IF user_role NOT IN ('admin', 'faculty') THEN user_role := 'faculty'; END IF;
+  INSERT INTO public.users (id, email, role)
+  VALUES (NEW.id, NEW.email, user_role)
+  ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email, role = EXCLUDED.role;
+  RETURN NEW;
+END;
+$function$
+ |
+| public      | is_admin                   | CREATE OR REPLACE FUNCTION public.is_admin()
+ RETURNS boolean
+ LANGUAGE sql
+ STABLE SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+  SELECT EXISTS (
+    SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'
+  );
+$function$
+                                                                                                                                                                                                                                                                                              |
+| public      | is_faculty                 | CREATE OR REPLACE FUNCTION public.is_faculty()
+ RETURNS boolean
+ LANGUAGE sql
+ STABLE SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+  SELECT EXISTS (
+    SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'faculty'
+  );
+$function$
+                                                                                                                                                                                                                                                                                          |

@@ -1,0 +1,17 @@
+| table_name          | constraint_name                       | constraint_type | constraint_definition                                                                                                       |
+| ------------------- | ------------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| admission_enquiries | admission_enquiries_pkey              | p               | PRIMARY KEY (id)                                                                                                            |
+| admission_enquiries | admission_enquiries_status_check      | c               | CHECK ((status = ANY (ARRAY['New'::text, 'Contacted'::text, 'Visit Scheduled'::text, 'Enrolled'::text, 'Rejected'::text]))) |
+| class_materials     | class_materials_class_number_check    | c               | CHECK (((class_number >= 1) AND (class_number <= 10)))                                                                      |
+| class_materials     | class_materials_pkey                  | p               | PRIMARY KEY (id)                                                                                                            |
+| class_materials     | class_materials_uploaded_by_fkey      | f               | FOREIGN KEY (uploaded_by) REFERENCES users(id) ON DELETE SET NULL                                                           |
+| faculty_members     | faculty_members_pkey                  | p               | PRIMARY KEY (id)                                                                                                            |
+| faculty_profiles    | faculty_profiles_assigned_class_check | c               | CHECK (((assigned_class >= 1) AND (assigned_class <= 10)))                                                                  |
+| faculty_profiles    | faculty_profiles_pkey                 | p               | PRIMARY KEY (id)                                                                                                            |
+| faculty_profiles    | faculty_profiles_user_id_fkey         | f               | FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE                                                                |
+| faculty_profiles    | faculty_profiles_user_id_key          | u               | UNIQUE (user_id)                                                                                                            |
+| gallery_images      | gallery_images_pkey                   | p               | PRIMARY KEY (id)                                                                                                            |
+| users               | users_email_key                       | u               | UNIQUE (email)                                                                                                              |
+| users               | users_id_fkey                         | f               | FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE                                                                |
+| users               | users_pkey                            | p               | PRIMARY KEY (id)                                                                                                            |
+| users               | users_role_check                      | c               | CHECK ((role = ANY (ARRAY['admin'::text, 'faculty'::text])))                                                                |
