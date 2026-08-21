@@ -3,7 +3,8 @@ import { LogOut } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { useAuth } from "@/hooks/useAuth";
-import { ADMIN_NAV_ITEMS } from "@/lib/admin-nav";
+import { getAdminNavItemsForRole, getAdminShellTitle } from "@/lib/admin-access";
+import { effectiveAdminStaffRoleKey } from "@/lib/auth";
 import { SITE } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +32,8 @@ export function AdminShell({ children }: AdminShellProps) {
   const { logout, auth } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const navItems = getAdminNavItemsForRole(effectiveAdminStaffRoleKey(auth));
+  const shellTitle = getAdminShellTitle(effectiveAdminStaffRoleKey(auth));
 
   const handleLogout = async () => {
     await logout();
@@ -45,14 +48,14 @@ export function AdminShell({ children }: AdminShellProps) {
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               {SITE.name}
             </p>
-            <p className="text-sm font-semibold">Admin Dashboard</p>
+            <p className="text-sm font-semibold">{shellTitle}</p>
           </div>
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
-                {ADMIN_NAV_ITEMS.map((item) => {
+                {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = pathname === item.to;
 
@@ -84,21 +87,29 @@ export function AdminShell({ children }: AdminShellProps) {
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>
-      <SidebarInset>
-        <header className="flex h-14 items-center gap-2 border-b bg-background px-4">
+      <SidebarInset className="min-w-0">
+        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border/60 bg-background/90 px-3 shadow-sm backdrop-blur sm:px-4">
           <SidebarTrigger />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <div className="flex flex-1 items-center justify-between gap-4">
-            <p className="truncate text-sm text-muted-foreground">
+          <Separator orientation="vertical" className="mr-2 hidden h-4 sm:block" />
+          <div className="flex min-w-0 flex-1 items-center justify-between gap-2 sm:gap-4">
+            <p className="min-w-0 truncate text-xs text-muted-foreground sm:text-sm">
               {auth?.email ?? "Administrator"}
+              {auth?.staffRoleKey ? ` · ${shellTitle}` : null}
             </p>
-            <Button variant="outline" size="sm" onClick={() => void handleLogout()}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="shrink-0"
+              onClick={() => void handleLogout()}
+            >
               <LogOut className="size-4" />
-              Logout
+              <span className="hidden sm:inline">Logout</span>
             </Button>
           </div>
         </header>
-        <div className="flex min-h-0 flex-1 flex-col p-4 md:p-6">{children}</div>
+        <div className="portal-shell-bg flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden p-3 sm:p-4 md:p-6">
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

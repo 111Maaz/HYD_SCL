@@ -1,0 +1,34 @@
+{
+  "cms": [
+    "admission_enquiries",
+    "class_materials",
+    "contact_enquiries",
+    "gallery_images"
+  ],
+  "erp_core": [
+    "academic_years",
+    "classes",
+    "class_years",
+    "sections",
+    "students",
+    "enrollments",
+    "calendar_events",
+    "attendance_records",
+    "fee_structures",
+    "fee_charges",
+    "fee_payments",
+    "audit_logs"
+  ],
+  "staff_rbac": [
+    "staff_profiles",
+    "staff_roles",
+    "roles",
+    "permissions",
+    "role_permissions",
+    "staff_scopes"
+  ],
+  "guardians": ["guardians", "student_guardians"],
+  "allotments": ["attendance_teacher_allotments", "secondary_teacher_allotments"],
+  "import": ["import_jobs", "import_rows"],
+  "legacy_dropped": ["users", "faculty_members", "faculty_profiles"]
+}

@@ -14,7 +14,13 @@
     "supabase:push": "supabase db push",
     "supabase:migrate": "node scripts/apply-migrations.mjs",
     "supabase:seed": "node scripts/setup-supabase.mjs",
-    "supabase:setup": "node scripts/apply-migrations.mjs && node scripts/setup-supabase.mjs"
+    "supabase:setup": "node scripts/apply-migrations.mjs && node scripts/setup-supabase.mjs",
+    "schema:coverage": "node scripts/schema-baseline/migration-coverage.mjs",
+    "schema:build-erp": "node scripts/schema-baseline/build-erp-foundation-migration.mjs",
+    "schema:dump:live": "node scripts/schema-baseline/dump-schema.mjs live",
+    "schema:dump:fresh": "node scripts/schema-baseline/dump-schema.mjs fresh",
+    "schema:compare": "node scripts/schema-baseline/compare-schemas.mjs live fresh",
+    "test:security:attendance": "node scripts/security/attendance-rls-check.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

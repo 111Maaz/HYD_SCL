@@ -50,7 +50,11 @@ import {
   type FacultyMemberInput,
 } from "@/services/faculty";
 import { LEADERSHIP_ROLES } from "@/lib/site";
-import type { FacultyMember } from "@/types/database";
+import {
+  getStaffDisplayName,
+  isStaffPubliclyVisible,
+  type StaffProfile,
+} from "@/types/database";
 
 const ACCENT_OPTIONS = [
   { label: "Primary gradient", value: "bg-gradient-to-br from-primary to-primary-glow" },
@@ -73,10 +77,10 @@ export function FacultyAdmin() {
   const queryClient = useQueryClient();
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editing, setEditing] = useState<FacultyMember | null>(null);
+  const [editing, setEditing] = useState<StaffProfile | null>(null);
   const [form, setForm] = useState<FacultyMemberInput>(emptyForm);
-  const [deleteTarget, setDeleteTarget] = useState<FacultyMember | null>(null);
-  const [photoTarget, setPhotoTarget] = useState<FacultyMember | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<StaffProfile | null>(null);
+  const [photoTarget, setPhotoTarget] = useState<StaffProfile | null>(null);
 
   const {
     data: members = [],
@@ -154,14 +158,14 @@ export function FacultyAdmin() {
     setDialogOpen(true);
   };
 
-  const openEdit = (member: FacultyMember) => {
+  const openEdit = (member: StaffProfile) => {
     setEditing(member);
     setForm({
-      name: member.name,
-      role: member.role,
+      name: getStaffDisplayName(member),
+      role: member.designation ?? "",
       bio: member.bio ?? "",
       accent: member.accent ?? ACCENT_OPTIONS[0].value,
-      is_active: member.is_active,
+      is_active: isStaffPubliclyVisible(member),
     });
     setDialogOpen(true);
   };
@@ -205,7 +209,9 @@ export function FacultyAdmin() {
         <p className="py-12 text-center text-sm text-muted-foreground">No faculty members yet.</p>
       ) : (
         <div className="space-y-3">
-          {members.map((member, index) => (
+          {members.map((member, index) => {
+            const name = getStaffDisplayName(member);
+            return (
             <div
               key={member.id}
               className="flex flex-col gap-4 rounded-lg border bg-card p-4 sm:flex-row sm:items-center sm:justify-between"
@@ -213,18 +219,20 @@ export function FacultyAdmin() {
               <div className="flex items-center gap-4">
                 <Avatar className="h-14 w-14">
                   {member.photo_url ? (
-                    <AvatarImage src={member.photo_url} alt={member.name} />
+                    <AvatarImage src={member.photo_url} alt={name} />
                   ) : null}
                   <AvatarFallback className={member.accent ?? ""}>
-                    {member.name.slice(0, 2).toUpperCase()}
+                    {name.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-medium">{member.name}</p>
-                    {!member.is_active && <Badge variant="secondary">Hidden</Badge>}
+                    <p className="font-medium">{name}</p>
+                    {!isStaffPubliclyVisible(member) && (
+                      <Badge variant="secondary">Hidden</Badge>
+                    )}
                   </div>
-                  <p className="text-sm text-muted-foreground">{member.role}</p>
+                  <p className="text-sm text-muted-foreground">{member.designation}</p>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -278,7 +286,8 @@ export function FacultyAdmin() {
                 </Button>
               </div>
             </div>
-          ))}
+          );
+          })}
         </div>
       )}
 
@@ -381,7 +390,8 @@ export function FacultyAdmin() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete faculty member?</AlertDialogTitle>
             <AlertDialogDescription>
-              This removes {deleteTarget?.name} from the Academics page roster.
+              This removes {deleteTarget ? getStaffDisplayName(deleteTarget) : ""} from the
+              Academics page roster.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

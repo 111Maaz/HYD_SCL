@@ -45,7 +45,7 @@ export function FacultyShell({ children }: FacultyShellProps) {
             <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               {SITE.name}
             </p>
-            <p className="text-sm font-semibold">Faculty Portal</p>
+            <p className="text-sm font-semibold">Staff portal</p>
           </div>
         </SidebarHeader>
         <SidebarContent>
@@ -84,19 +84,28 @@ export function FacultyShell({ children }: FacultyShellProps) {
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>
-      <SidebarInset>
-        <header className="flex h-14 items-center gap-2 border-b bg-background px-4">
+      <SidebarInset className="min-w-0">
+        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border/60 bg-background/90 px-3 shadow-sm backdrop-blur sm:px-4">
           <SidebarTrigger />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <div className="flex flex-1 items-center justify-between gap-4">
-            <p className="truncate text-sm text-muted-foreground">{auth?.email ?? "Faculty"}</p>
-            <Button variant="outline" size="sm" onClick={() => void handleLogout()}>
+          <Separator orientation="vertical" className="mr-2 hidden h-4 sm:block" />
+          <div className="flex min-w-0 flex-1 items-center justify-between gap-2 sm:gap-4">
+            <p className="min-w-0 truncate text-xs text-muted-foreground sm:text-sm">
+              {auth?.email ?? "Faculty"}
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="shrink-0"
+              onClick={() => void handleLogout()}
+            >
               <LogOut className="size-4" />
-              Logout
+              <span className="hidden sm:inline">Logout</span>
             </Button>
           </div>
         </header>
-        <div className="flex min-h-0 flex-1 flex-col p-4 md:p-6">{children}</div>
+        <div className="portal-shell-bg flex min-h-0 min-w-0 flex-1 flex-col overflow-x-hidden p-3 sm:p-4 md:p-6">
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

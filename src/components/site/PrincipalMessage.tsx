@@ -1,14 +1,16 @@
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "@/lib/motion";
 import { Quote } from "lucide-react";
 import { SectionHeader } from "@/components/site/SectionHeader";
 import { LEADERSHIP } from "@/lib/site";
-
-const principal = LEADERSHIP[0];
-
-// Put the principal photo in public/ and set the path here, e.g. "/images/principal.jpg"
-const PRINCIPAL_PHOTO = "";
+import { fetchFacultyMembers, pickLeadershipPeople } from "@/services/faculty";
 
 export function PrincipalMessage() {
+  const { data: faculty = LEADERSHIP } = useQuery({
+    queryKey: ["faculty-members"],
+    queryFn: fetchFacultyMembers,
+  });
+  const principal = pickLeadershipPeople(faculty)[0];
   return (
     <section id="principal-message" className="bg-secondary py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -39,9 +41,9 @@ export function PrincipalMessage() {
               <div className="relative">
                 <div className="absolute -inset-2 rounded-2xl bg-gold/20 blur-lg" aria-hidden />
                 <div className="relative h-40 w-40 overflow-hidden rounded-2xl border-2 border-gold/40 bg-gradient-to-br from-primary to-primary-glow shadow-soft sm:h-44 sm:w-44">
-                  {PRINCIPAL_PHOTO ? (
+                  {principal.photoUrl ? (
                     <img
-                      src={PRINCIPAL_PHOTO}
+                      src={principal.photoUrl}
                       alt={principal.name || "Principal"}
                       className="h-full w-full object-cover"
                     />

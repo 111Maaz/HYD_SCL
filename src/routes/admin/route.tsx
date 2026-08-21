@@ -5,7 +5,7 @@ import {
   useRouterState,
 } from "@tanstack/react-router";
 
-import { requireAdmin } from "@/lib/route-guards";
+import { requireAdminPath } from "@/lib/route-guards";
 
 export const Route = createFileRoute("/admin")({
   beforeLoad: async ({ location }) => {
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/admin")({
       return;
     }
 
-    await requireAdmin();
+    await requireAdminPath(location.pathname);
   },
   component: AdminLayout,
 });

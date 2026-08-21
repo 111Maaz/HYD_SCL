@@ -7,17 +7,16 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { AuthState } from "@/lib/auth";
+import type { AuthState, LoginPortal } from "@/lib/auth";
 import { getAuthState, signIn as authSignIn, signOut as authSignOut } from "@/lib/auth";
 import { createSupabaseBrowserClient } from "@/services/supabase/client";
 import { isSupabaseConfigured } from "@/services/supabase";
-import type { UserRole } from "@/types/database";
 
 interface AuthContextValue {
   auth: AuthState | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string, role: UserRole) => Promise<AuthState>;
+  login: (email: string, password: string, portal?: LoginPortal) => Promise<AuthState>;
   logout: () => Promise<void>;
 }
 
@@ -63,8 +62,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [refreshAuth]);
 
-  const login = useCallback(async (email: string, password: string, role: UserRole) => {
-    const nextAuth = await authSignIn(email, password, role);
+  const login = useCallback(async (email: string, password: string, portal?: LoginPortal) => {
+    const nextAuth = await authSignIn(email, password, portal);
     setAuth(nextAuth);
     return nextAuth;
   }, []);

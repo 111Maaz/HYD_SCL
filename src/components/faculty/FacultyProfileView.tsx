@@ -7,7 +7,12 @@ import {
 } from "@/components/admin/AdminPageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
-import { fetchOwnFacultyProfile } from "@/services/faculty-portal";
+import {
+  fetchOwnFacultyProfile,
+  getPortalProfileName,
+  getPortalProfileRole,
+} from "@/services/faculty-portal";
+import { getStaffDisplayName } from "@/types/database";
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -41,7 +46,9 @@ export function FacultyProfileView() {
 
   if (!profile) return null;
 
-  const initials = getInitials(profile.name);
+  const name = getPortalProfileName(profile);
+  const role = getPortalProfileRole(profile);
+  const initials = getInitials(getStaffDisplayName(profile));
 
   return (
     <>
@@ -55,17 +62,13 @@ export function FacultyProfileView() {
           <CardContent className="flex flex-col items-center pt-8 pb-6">
             <div className="grid h-28 w-28 place-items-center overflow-hidden rounded-full bg-gradient-to-br from-primary to-primary-glow font-display text-3xl font-bold text-primary-foreground">
               {profile.photo_url ? (
-                <img
-                  src={profile.photo_url}
-                  alt={profile.name}
-                  className="h-full w-full object-cover"
-                />
+                <img src={profile.photo_url} alt={name} className="h-full w-full object-cover" />
               ) : (
                 initials
               )}
             </div>
-            <h2 className="mt-5 text-center font-display text-xl font-semibold">{profile.name}</h2>
-            <p className="text-center text-sm font-medium text-primary">{profile.role}</p>
+            <h2 className="mt-5 text-center font-display text-xl font-semibold">{name}</h2>
+            <p className="text-center text-sm font-medium text-primary">{role}</p>
           </CardContent>
         </Card>
 
@@ -77,15 +80,17 @@ export function FacultyProfileView() {
           <CardContent className="space-y-4 text-sm">
             <div>
               <p className="text-muted-foreground">Email</p>
-              <p className="font-medium">{auth?.email ?? "—"}</p>
+              <p className="font-medium">{auth?.email ?? profile.email ?? "—"}</p>
             </div>
             <div>
               <p className="text-muted-foreground">Assigned class</p>
-              <p className="font-medium">Class {profile.assigned_class}</p>
+              <p className="font-medium">
+                {profile.assigned_class != null ? `Class ${profile.assigned_class}` : "—"}
+              </p>
             </div>
             <div>
               <p className="text-muted-foreground">Role / subject</p>
-              <p className="font-medium">{profile.role}</p>
+              <p className="font-medium">{role}</p>
             </div>
             {profile.bio && (
               <div>

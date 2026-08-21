@@ -1,4 +1,5 @@
 import { createIsomorphicFn } from "@tanstack/react-start";
+import { isRedirect, redirect } from "@tanstack/react-router";
 
 import { requireRole } from "@/lib/route-guards";
 import { isSupabaseConfigured } from "@/services/supabase/env";
@@ -24,7 +25,13 @@ const assertFacultyCanAccessPortal = createIsomorphicFn()
   });
 
 export async function requireFaculty() {
-  const auth = await requireRole("faculty");
-  await assertFacultyCanAccessPortal(auth.userId);
-  return auth;
+  try {
+    const auth = await requireRole("faculty");
+    await assertFacultyCanAccessPortal(auth.userId);
+    return auth;
+  } catch (error) {
+    if (isRedirect(error)) throw error;
+    console.warn("requireFaculty:", error);
+    throw redirect({ to: "/admin/login" as const });
+  }
 }

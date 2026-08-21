@@ -4,7 +4,12 @@ import { AuthError } from "@/lib/auth";
 import type { ClassMaterial } from "@/lib/class-materials";
 import { deleteFileByUrl, uploadFile } from "@/services/storage";
 import { requireSupabase } from "@/services/supabase";
-import type { ClassMaterialRow, FacultyProfile } from "@/types/database";
+import {
+  getStaffDisplayName,
+  isStaffPortalActive,
+  type ClassMaterialRow,
+  type StaffProfile,
+} from "@/types/database";
 
 const CLASS_MATERIALS_BUCKET = "class-materials";
 
@@ -28,9 +33,9 @@ export async function assertFacultyPortalAccess(
   userId: string,
 ): Promise<void> {
   const { data, error } = await supabase
-    .from("faculty_profiles")
-    .select("is_active")
-    .eq("user_id", userId)
+    .from("staff_profiles")
+    .select("status")
+    .eq("auth_user_id", userId)
     .maybeSingle();
 
   if (error) {
@@ -41,19 +46,19 @@ export async function assertFacultyPortalAccess(
     throw new AuthError("No faculty profile found. Contact your administrator.");
   }
 
-  if (data.is_active === false) {
+  if (!isStaffPortalActive(data)) {
     throw new AuthError(
       "Your faculty portal access has been temporarily disabled. Contact your administrator.",
     );
   }
 }
 
-export async function fetchOwnFacultyProfile(userId: string): Promise<FacultyProfile> {
+export async function fetchOwnFacultyProfile(userId: string): Promise<StaffProfile> {
   const client = requireSupabase();
   const { data, error } = await client
-    .from("faculty_profiles")
+    .from("staff_profiles")
     .select("*")
-    .eq("user_id", userId)
+    .eq("auth_user_id", userId)
     .maybeSingle();
 
   if (error) {
@@ -64,13 +69,22 @@ export async function fetchOwnFacultyProfile(userId: string): Promise<FacultyPro
     throw new Error("No faculty profile found. Contact your administrator.");
   }
 
-  if (data.is_active === false) {
+  if (!isStaffPortalActive(data)) {
     throw new Error(
       "Your faculty portal access has been temporarily disabled. Contact your administrator.",
     );
   }
 
   return data;
+}
+
+/** Display helpers for portal UI */
+export function getPortalProfileName(profile: StaffProfile): string {
+  return getStaffDisplayName(profile);
+}
+
+export function getPortalProfileRole(profile: StaffProfile): string {
+  return profile.designation ?? "Teacher";
 }
 
 export async function fetchFacultyClassMaterials(assignedClass: number): Promise<ClassMaterial[]> {

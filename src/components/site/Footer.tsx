@@ -105,12 +105,20 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-primary-foreground/70 sm:flex-row sm:px-6 lg:px-8">
           <p>© {new Date().getFullYear()} {SITE.name}. All rights reserved.</p>
-          <Link
-            to="/admin/login"
-            className="text-primary-foreground/70 transition hover:text-gold"
-          >
-            Staff Login
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              to="/parent/login"
+              className="text-primary-foreground/70 transition hover:text-gold"
+            >
+              Parent Login
+            </Link>
+            <Link
+              to="/admin/login"
+              className="text-primary-foreground/70 transition hover:text-gold"
+            >
+              Staff Login
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

@@ -1,34 +1,69 @@
-import { redirect } from "@tanstack/react-router";
+import { isRedirect, redirect } from "@tanstack/react-router";
 
-import { getAuthState } from "@/lib/auth";
+import { canAccessAdminPath, getAdminHomePath } from "@/lib/admin-access";
+import {
+  effectiveAdminStaffRoleKey,
+  getAuthState,
+  getDashboardPath,
+  getLoginPath,
+} from "@/lib/auth";
 import type { UserRole } from "@/types/database";
 
 export async function requireRole(role: UserRole) {
-  const auth = await getAuthState();
+  try {
+    const auth = await getAuthState();
 
-  if (!auth) {
-    throw redirect({ to: "/admin/login" });
+    if (!auth) {
+      throw redirect({ to: getLoginPath(role) });
+    }
+
+    if (auth.role !== role) {
+      throw redirect({
+        to: getDashboardPath(auth.role, auth.staffRoleKey, auth.alsoInchargeRoleKey),
+      });
+    }
+
+    return auth;
+  } catch (error) {
+    if (isRedirect(error)) throw error;
+    console.warn("requireRole:", error);
+    throw redirect({ to: getLoginPath(role) });
   }
-
-  if (auth.role !== role) {
-    throw redirect({ to: auth.role === "admin" ? "/admin/dashboard" : "/faculty/portal/profile" });
-  }
-
-  return auth;
 }
 
 export async function requireAdmin() {
   return requireRole("admin");
 }
 
-export async function redirectIfAuthenticated() {
-  const auth = await getAuthState();
+export async function requireAdminPath(pathname: string) {
+  const auth = await requireAdmin();
+  const roleKey = effectiveAdminStaffRoleKey(auth);
 
-  if (!auth) {
-    return null;
+  if (!canAccessAdminPath(roleKey, pathname)) {
+    throw redirect({ to: getAdminHomePath(roleKey) });
   }
 
-  throw redirect({
-    to: auth.role === "admin" ? "/admin/dashboard" : "/faculty/portal/profile",
-  });
+  return auth;
+}
+
+export async function requireParent() {
+  return requireRole("parent");
+}
+
+export async function redirectIfAuthenticated() {
+  try {
+    const auth = await getAuthState();
+
+    if (!auth) {
+      return null;
+    }
+
+    throw redirect({
+      to: getDashboardPath(auth.role, auth.staffRoleKey, auth.alsoInchargeRoleKey),
+    });
+  } catch (error) {
+    if (isRedirect(error)) throw error;
+    console.warn("redirectIfAuthenticated:", error);
+    return null;
+  }
 }

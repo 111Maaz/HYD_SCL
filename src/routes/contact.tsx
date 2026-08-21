@@ -9,6 +9,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { SITE } from "@/lib/site";
 import { motion } from "@/lib/motion";
+import { submitContactEnquiry } from "@/services/contact";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -42,10 +43,13 @@ function ContactPage() {
   } = useForm<Values>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (values: Values) => {
-    await new Promise((r) => setTimeout(r, 600));
-    console.log("Contact:", values);
-    toast.success("Message sent! We'll reply within one business day.");
-    reset();
+    try {
+      await submitContactEnquiry(values);
+      toast.success("Message sent! We'll reply within one business day.");
+      reset();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to send message.");
+    }
   };
 
   const contactItems = [

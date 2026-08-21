@@ -4,6 +4,7 @@ node_modules/
 # Build output
 .next/
 .dist/
+dist/
 build/
 
 # Production files
@@ -41,3 +42,6 @@ coverage/
 
 # Misc
 *.local
+
+# Schema baseline snapshots (may contain policy definitions from live DB)
+supabase/baseline/snapshots/

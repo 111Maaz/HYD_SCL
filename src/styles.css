@@ -197,6 +197,31 @@
   box-shadow: var(--shadow-gold);
 }
 
+/* Admin / faculty portal shell — subtle tint instead of flat white */
+@utility portal-shell-bg {
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      color-mix(in oklab, var(--primary) 8%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 0% 100%,
+      color-mix(in oklab, var(--primary) 4%, transparent),
+      transparent 45%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--muted) 50%, var(--background)),
+      var(--background)
+    );
+}
+
+/* Portal list rows — attendance, roster tables */
+@utility portal-attendance-row {
+  @apply transition-colors duration-150;
+}
+
 /* Islamic geometric pattern overlay */
 @utility pattern-islamic {
   background-image: radial-gradient(

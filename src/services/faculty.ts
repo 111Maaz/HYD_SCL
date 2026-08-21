@@ -2,9 +2,13 @@ import type { Person } from "@/components/site/PersonCard";
 import { FACULTY, LEADERSHIP, LEADERSHIP_ROLES } from "@/lib/site";
 import { deleteFileByUrl, uploadFile } from "@/services/storage";
 import { requireSupabase, getSupabase } from "@/services/supabase";
-import type { FacultyMember } from "@/types/database";
+import {
+  getStaffDisplayName,
+  type StaffProfile,
+  type StaffStatus,
+} from "@/types/database";
 
-const FACULTY_PHOTOS_BUCKET = "faculty-photos";
+const STAFF_PHOTOS_BUCKET = "faculty-photos";
 
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -13,16 +17,20 @@ function getInitials(name: string): string {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
-export function facultyMemberToPerson(member: FacultyMember): Person {
+export function staffProfileToPerson(member: StaffProfile): Person {
+  const name = getStaffDisplayName(member);
   return {
-    name: member.name,
-    role: member.role,
+    name,
+    role: member.designation ?? "",
     bio: member.bio ?? undefined,
-    initials: getInitials(member.name),
+    initials: member.initials ?? getInitials(name),
     accent: member.accent ?? undefined,
     photoUrl: member.photo_url ?? undefined,
   };
 }
+
+/** @deprecated Use staffProfileToPerson */
+export const facultyMemberToPerson = staffProfileToPerson;
 
 export type FacultyMemberInput = {
   name: string;
@@ -38,7 +46,9 @@ function normalizeRole(role: string): string {
 
 function findRoleMatch(people: Person[], role: string): Person | undefined {
   const normalizedRole = normalizeRole(role);
-  return people.find((person) => normalizeRole(person.role) === normalizedRole && person.name.trim());
+  return people.find(
+    (person) => normalizeRole(person.role) === normalizedRole && person.name.trim(),
+  );
 }
 
 export function pickLeadershipPeople(people: Person[]): Person[] {
@@ -73,9 +83,10 @@ export async function fetchFacultyMembers(): Promise<Person[]> {
   }
 
   const { data, error } = await supabase
-    .from("faculty_members")
+    .from("staff_profiles")
     .select("*")
-    .eq("is_active", true)
+    .eq("is_public", true)
+    .eq("status", "ACTIVE")
     .order("display_order", { ascending: true });
 
   if (error) {
@@ -86,14 +97,15 @@ export async function fetchFacultyMembers(): Promise<Person[]> {
     return FACULTY;
   }
 
-  return data.map(facultyMemberToPerson);
+  return data.map(staffProfileToPerson);
 }
 
-export async function fetchAllFacultyMembers(): Promise<FacultyMember[]> {
+export async function fetchAllFacultyMembers(): Promise<StaffProfile[]> {
   const client = requireSupabase();
   const { data, error } = await client
-    .from("faculty_members")
+    .from("staff_profiles")
     .select("*")
+    .or("auth_user_id.is.null,is_public.eq.true")
     .order("display_order", { ascending: true });
 
   if (error) {
@@ -106,8 +118,9 @@ export async function fetchAllFacultyMembers(): Promise<FacultyMember[]> {
 async function getNextDisplayOrder(): Promise<number> {
   const client = requireSupabase();
   const { data, error } = await client
-    .from("faculty_members")
+    .from("staff_profiles")
     .select("display_order")
+    .eq("is_public", true)
     .order("display_order", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -119,21 +132,22 @@ async function getNextDisplayOrder(): Promise<number> {
   return (data?.display_order ?? -1) + 1;
 }
 
-export async function createFacultyMember(input: FacultyMemberInput): Promise<FacultyMember> {
+export async function createFacultyMember(input: FacultyMemberInput): Promise<StaffProfile> {
   const client = requireSupabase();
   const displayOrder = await getNextDisplayOrder();
 
   const { data, error } = await client
-    .from("faculty_members")
+    .from("staff_profiles")
     .insert({
-      name: input.name.trim(),
-      role: input.role.trim(),
+      first_name: input.name.trim(),
+      designation: input.role.trim(),
       bio: input.bio?.trim() ? input.bio.trim() : null,
       initials: null,
       accent: input.accent?.trim() ? input.accent.trim() : null,
       photo_url: null,
       display_order: displayOrder,
-      is_active: input.is_active ?? true,
+      is_public: input.is_active ?? true,
+      status: (input.is_active ?? true ? "ACTIVE" : "INACTIVE") as StaffStatus,
     })
     .select()
     .single();
@@ -148,17 +162,18 @@ export async function createFacultyMember(input: FacultyMemberInput): Promise<Fa
 export async function updateFacultyMember(
   id: string,
   input: FacultyMemberInput,
-): Promise<FacultyMember> {
+): Promise<StaffProfile> {
   const client = requireSupabase();
   const { data, error } = await client
-    .from("faculty_members")
+    .from("staff_profiles")
     .update({
-      name: input.name.trim(),
-      role: input.role.trim(),
+      first_name: input.name.trim(),
+      designation: input.role.trim(),
       bio: input.bio?.trim() ? input.bio.trim() : null,
       initials: null,
       accent: input.accent?.trim() ? input.accent.trim() : null,
-      is_active: input.is_active ?? true,
+      is_public: input.is_active ?? true,
+      status: (input.is_active ?? true ? "ACTIVE" : "INACTIVE") as StaffStatus,
     })
     .eq("id", id)
     .select()
@@ -173,13 +188,13 @@ export async function updateFacultyMember(
 
 export async function deleteFacultyMember(id: string): Promise<void> {
   const client = requireSupabase();
-  const member = await client.from("faculty_members").select("photo_url").eq("id", id).single();
+  const member = await client.from("staff_profiles").select("photo_url").eq("id", id).single();
 
   if (member.error) {
     throw new Error(member.error.message || "Failed to load faculty member.");
   }
 
-  const { error } = await client.from("faculty_members").delete().eq("id", id);
+  const { error } = await client.from("staff_profiles").delete().eq("id", id);
 
   if (error) {
     throw new Error(error.message || "Failed to delete faculty member.");
@@ -187,7 +202,7 @@ export async function deleteFacultyMember(id: string): Promise<void> {
 
   if (member.data?.photo_url) {
     try {
-      await deleteFileByUrl(FACULTY_PHOTOS_BUCKET, member.data.photo_url);
+      await deleteFileByUrl(STAFF_PHOTOS_BUCKET, member.data.photo_url);
     } catch {
       // Photo cleanup is best-effort after row deletion.
     }
@@ -198,7 +213,7 @@ export async function reorderFacultyMembers(orderedIds: string[]): Promise<void>
   const client = requireSupabase();
 
   const updates = orderedIds.map((id, index) =>
-    client.from("faculty_members").update({ display_order: index }).eq("id", id),
+    client.from("staff_profiles").update({ display_order: index }).eq("id", id),
   );
 
   const results = await Promise.all(updates);
@@ -209,18 +224,18 @@ export async function reorderFacultyMembers(orderedIds: string[]): Promise<void>
   }
 }
 
-export async function uploadFacultyPhoto(id: string, file: File): Promise<FacultyMember> {
+export async function uploadFacultyPhoto(id: string, file: File): Promise<StaffProfile> {
   const client = requireSupabase();
-  const existing = await client.from("faculty_members").select("photo_url").eq("id", id).single();
+  const existing = await client.from("staff_profiles").select("photo_url").eq("id", id).single();
 
   if (existing.error) {
     throw new Error(existing.error.message || "Failed to load faculty member.");
   }
 
-  const publicUrl = await uploadFile(FACULTY_PHOTOS_BUCKET, file, id);
+  const publicUrl = await uploadFile(STAFF_PHOTOS_BUCKET, file, id);
 
   const { data, error } = await client
-    .from("faculty_members")
+    .from("staff_profiles")
     .update({ photo_url: publicUrl })
     .eq("id", id)
     .select()
@@ -232,7 +247,7 @@ export async function uploadFacultyPhoto(id: string, file: File): Promise<Facult
 
   if (existing.data?.photo_url && existing.data.photo_url !== publicUrl) {
     try {
-      await deleteFileByUrl(FACULTY_PHOTOS_BUCKET, existing.data.photo_url);
+      await deleteFileByUrl(STAFF_PHOTOS_BUCKET, existing.data.photo_url);
     } catch {
       // Old photo cleanup is best-effort.
     }
@@ -241,16 +256,16 @@ export async function uploadFacultyPhoto(id: string, file: File): Promise<Facult
   return data;
 }
 
-export async function removeFacultyPhoto(id: string): Promise<FacultyMember> {
+export async function removeFacultyPhoto(id: string): Promise<StaffProfile> {
   const client = requireSupabase();
-  const existing = await client.from("faculty_members").select("photo_url").eq("id", id).single();
+  const existing = await client.from("staff_profiles").select("photo_url").eq("id", id).single();
 
   if (existing.error) {
     throw new Error(existing.error.message || "Failed to load faculty member.");
   }
 
   const { data, error } = await client
-    .from("faculty_members")
+    .from("staff_profiles")
     .update({ photo_url: null })
     .eq("id", id)
     .select()
@@ -262,7 +277,7 @@ export async function removeFacultyPhoto(id: string): Promise<FacultyMember> {
 
   if (existing.data?.photo_url) {
     try {
-      await deleteFileByUrl(FACULTY_PHOTOS_BUCKET, existing.data.photo_url);
+      await deleteFileByUrl(STAFF_PHOTOS_BUCKET, existing.data.photo_url);
     } catch {
       // Storage cleanup is best-effort.
     }

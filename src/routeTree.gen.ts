@@ -16,21 +16,42 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AdmissionsRouteImport } from './routes/admissions'
 import { Route as AcademicsRouteImport } from './routes/academics'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as ParentRouteRouteImport } from './routes/parent/route'
 import { Route as FacultyRouteRouteImport } from './routes/faculty/route'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ParentIndexRouteImport } from './routes/parent/index'
+import { Route as ParentLoginRouteImport } from './routes/parent/login'
+import { Route as ParentChildrenRouteImport } from './routes/parent/children'
+import { Route as ParentAccountRouteImport } from './routes/parent/account'
+import { Route as AdminYearEndRouteImport } from './routes/admin/year-end'
+import { Route as AdminStudentsRouteImport } from './routes/admin/students'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminImportRouteImport } from './routes/admin/import'
+import { Route as AdminGuardiansRouteImport } from './routes/admin/guardians'
 import { Route as AdminGalleryRouteImport } from './routes/admin/gallery'
+import { Route as AdminFeesRouteImport } from './routes/admin/fees'
 import { Route as AdminFacultyAccountsRouteImport } from './routes/admin/faculty-accounts'
 import { Route as AdminFacultyRouteImport } from './routes/admin/faculty'
 import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
+import { Route as AdminContactRouteImport } from './routes/admin/contact'
 import { Route as AdminClassMaterialsRouteImport } from './routes/admin/class-materials'
+import { Route as AdminCalendarRouteImport } from './routes/admin/calendar'
+import { Route as AdminAuditRouteImport } from './routes/admin/audit'
+import { Route as AdminAttendanceRouteImport } from './routes/admin/attendance'
 import { Route as AdminAdmissionsRouteImport } from './routes/admin/admissions'
+import { Route as AdminAccountRouteImport } from './routes/admin/account'
+import { Route as AdminAcademicYearsRouteImport } from './routes/admin/academic-years'
+import { Route as AdminAcademicStructureRouteImport } from './routes/admin/academic-structure'
 import { Route as FacultyPortalRouteRouteImport } from './routes/faculty/portal/route'
 import { Route as FacultyPortalIndexRouteImport } from './routes/faculty/portal/index'
+import { Route as ParentChildrenStudentIdRouteImport } from './routes/parent/children.$studentId'
 import { Route as FacultyPortalProfileRouteImport } from './routes/faculty/portal/profile'
 import { Route as FacultyPortalMaterialsRouteImport } from './routes/faculty/portal/materials'
+import { Route as FacultyPortalHomeRouteImport } from './routes/faculty/portal/home'
+import { Route as FacultyPortalAttendanceRouteImport } from './routes/faculty/portal/attendance'
+import { Route as FacultyPortalAccountRouteImport } from './routes/faculty/portal/account'
 
 const StudentsRoute = StudentsRouteImport.update({
   id: '/students',
@@ -67,6 +88,11 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ParentRouteRoute = ParentRouteRouteImport.update({
+  id: '/parent',
+  path: '/parent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FacultyRouteRoute = FacultyRouteRouteImport.update({
   id: '/faculty',
   path: '/faculty',
@@ -82,6 +108,36 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ParentIndexRoute = ParentIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ParentRouteRoute,
+} as any)
+const ParentLoginRoute = ParentLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => ParentRouteRoute,
+} as any)
+const ParentChildrenRoute = ParentChildrenRouteImport.update({
+  id: '/children',
+  path: '/children',
+  getParentRoute: () => ParentRouteRoute,
+} as any)
+const ParentAccountRoute = ParentAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => ParentRouteRoute,
+} as any)
+const AdminYearEndRoute = AdminYearEndRouteImport.update({
+  id: '/year-end',
+  path: '/year-end',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminStudentsRoute = AdminStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -92,9 +148,24 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminImportRoute = AdminImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminGuardiansRoute = AdminGuardiansRouteImport.update({
+  id: '/guardians',
+  path: '/guardians',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminGalleryRoute = AdminGalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminFeesRoute = AdminFeesRouteImport.update({
+  id: '/fees',
+  path: '/fees',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminFacultyAccountsRoute = AdminFacultyAccountsRouteImport.update({
@@ -112,14 +183,49 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminContactRoute = AdminContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminClassMaterialsRoute = AdminClassMaterialsRouteImport.update({
   id: '/class-materials',
   path: '/class-materials',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminCalendarRoute = AdminCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminAttendanceRoute = AdminAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminAdmissionsRoute = AdminAdmissionsRouteImport.update({
   id: '/admissions',
   path: '/admissions',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminAccountRoute = AdminAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminAcademicYearsRoute = AdminAcademicYearsRouteImport.update({
+  id: '/academic-years',
+  path: '/academic-years',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminAcademicStructureRoute = AdminAcademicStructureRouteImport.update({
+  id: '/academic-structure',
+  path: '/academic-structure',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const FacultyPortalRouteRoute = FacultyPortalRouteRouteImport.update({
@@ -132,6 +238,11 @@ const FacultyPortalIndexRoute = FacultyPortalIndexRouteImport.update({
   path: '/',
   getParentRoute: () => FacultyPortalRouteRoute,
 } as any)
+const ParentChildrenStudentIdRoute = ParentChildrenStudentIdRouteImport.update({
+  id: '/$studentId',
+  path: '/$studentId',
+  getParentRoute: () => ParentChildrenRoute,
+} as any)
 const FacultyPortalProfileRoute = FacultyPortalProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -142,11 +253,27 @@ const FacultyPortalMaterialsRoute = FacultyPortalMaterialsRouteImport.update({
   path: '/materials',
   getParentRoute: () => FacultyPortalRouteRoute,
 } as any)
+const FacultyPortalHomeRoute = FacultyPortalHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => FacultyPortalRouteRoute,
+} as any)
+const FacultyPortalAttendanceRoute = FacultyPortalAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => FacultyPortalRouteRoute,
+} as any)
+const FacultyPortalAccountRoute = FacultyPortalAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => FacultyPortalRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/faculty': typeof FacultyRouteRouteWithChildren
+  '/parent': typeof ParentRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/academics': typeof AcademicsRoute
   '/admissions': typeof AdmissionsRoute
@@ -155,16 +282,36 @@ export interface FileRoutesByFullPath {
   '/islamic-education': typeof IslamicEducationRoute
   '/students': typeof StudentsRoute
   '/faculty/portal': typeof FacultyPortalRouteRouteWithChildren
+  '/admin/academic-structure': typeof AdminAcademicStructureRoute
+  '/admin/academic-years': typeof AdminAcademicYearsRoute
+  '/admin/account': typeof AdminAccountRoute
   '/admin/admissions': typeof AdminAdmissionsRoute
+  '/admin/attendance': typeof AdminAttendanceRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/calendar': typeof AdminCalendarRoute
   '/admin/class-materials': typeof AdminClassMaterialsRoute
+  '/admin/contact': typeof AdminContactRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/faculty': typeof AdminFacultyRoute
   '/admin/faculty-accounts': typeof AdminFacultyAccountsRoute
+  '/admin/fees': typeof AdminFeesRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/guardians': typeof AdminGuardiansRoute
+  '/admin/import': typeof AdminImportRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/students': typeof AdminStudentsRoute
+  '/admin/year-end': typeof AdminYearEndRoute
+  '/parent/account': typeof ParentAccountRoute
+  '/parent/children': typeof ParentChildrenRouteWithChildren
+  '/parent/login': typeof ParentLoginRoute
+  '/parent/': typeof ParentIndexRoute
+  '/faculty/portal/account': typeof FacultyPortalAccountRoute
+  '/faculty/portal/attendance': typeof FacultyPortalAttendanceRoute
+  '/faculty/portal/home': typeof FacultyPortalHomeRoute
   '/faculty/portal/materials': typeof FacultyPortalMaterialsRoute
   '/faculty/portal/profile': typeof FacultyPortalProfileRoute
+  '/parent/children/$studentId': typeof ParentChildrenStudentIdRoute
   '/faculty/portal/': typeof FacultyPortalIndexRoute
 }
 export interface FileRoutesByTo {
@@ -178,16 +325,36 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/islamic-education': typeof IslamicEducationRoute
   '/students': typeof StudentsRoute
+  '/admin/academic-structure': typeof AdminAcademicStructureRoute
+  '/admin/academic-years': typeof AdminAcademicYearsRoute
+  '/admin/account': typeof AdminAccountRoute
   '/admin/admissions': typeof AdminAdmissionsRoute
+  '/admin/attendance': typeof AdminAttendanceRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/calendar': typeof AdminCalendarRoute
   '/admin/class-materials': typeof AdminClassMaterialsRoute
+  '/admin/contact': typeof AdminContactRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/faculty': typeof AdminFacultyRoute
   '/admin/faculty-accounts': typeof AdminFacultyAccountsRoute
+  '/admin/fees': typeof AdminFeesRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/guardians': typeof AdminGuardiansRoute
+  '/admin/import': typeof AdminImportRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/students': typeof AdminStudentsRoute
+  '/admin/year-end': typeof AdminYearEndRoute
+  '/parent/account': typeof ParentAccountRoute
+  '/parent/children': typeof ParentChildrenRouteWithChildren
+  '/parent/login': typeof ParentLoginRoute
+  '/parent': typeof ParentIndexRoute
+  '/faculty/portal/account': typeof FacultyPortalAccountRoute
+  '/faculty/portal/attendance': typeof FacultyPortalAttendanceRoute
+  '/faculty/portal/home': typeof FacultyPortalHomeRoute
   '/faculty/portal/materials': typeof FacultyPortalMaterialsRoute
   '/faculty/portal/profile': typeof FacultyPortalProfileRoute
+  '/parent/children/$studentId': typeof ParentChildrenStudentIdRoute
   '/faculty/portal': typeof FacultyPortalIndexRoute
 }
 export interface FileRoutesById {
@@ -195,6 +362,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/faculty': typeof FacultyRouteRouteWithChildren
+  '/parent': typeof ParentRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/academics': typeof AcademicsRoute
   '/admissions': typeof AdmissionsRoute
@@ -203,16 +371,36 @@ export interface FileRoutesById {
   '/islamic-education': typeof IslamicEducationRoute
   '/students': typeof StudentsRoute
   '/faculty/portal': typeof FacultyPortalRouteRouteWithChildren
+  '/admin/academic-structure': typeof AdminAcademicStructureRoute
+  '/admin/academic-years': typeof AdminAcademicYearsRoute
+  '/admin/account': typeof AdminAccountRoute
   '/admin/admissions': typeof AdminAdmissionsRoute
+  '/admin/attendance': typeof AdminAttendanceRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/admin/calendar': typeof AdminCalendarRoute
   '/admin/class-materials': typeof AdminClassMaterialsRoute
+  '/admin/contact': typeof AdminContactRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/faculty': typeof AdminFacultyRoute
   '/admin/faculty-accounts': typeof AdminFacultyAccountsRoute
+  '/admin/fees': typeof AdminFeesRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/guardians': typeof AdminGuardiansRoute
+  '/admin/import': typeof AdminImportRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/students': typeof AdminStudentsRoute
+  '/admin/year-end': typeof AdminYearEndRoute
+  '/parent/account': typeof ParentAccountRoute
+  '/parent/children': typeof ParentChildrenRouteWithChildren
+  '/parent/login': typeof ParentLoginRoute
+  '/parent/': typeof ParentIndexRoute
+  '/faculty/portal/account': typeof FacultyPortalAccountRoute
+  '/faculty/portal/attendance': typeof FacultyPortalAttendanceRoute
+  '/faculty/portal/home': typeof FacultyPortalHomeRoute
   '/faculty/portal/materials': typeof FacultyPortalMaterialsRoute
   '/faculty/portal/profile': typeof FacultyPortalProfileRoute
+  '/parent/children/$studentId': typeof ParentChildrenStudentIdRoute
   '/faculty/portal/': typeof FacultyPortalIndexRoute
 }
 export interface FileRouteTypes {
@@ -221,6 +409,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/faculty'
+    | '/parent'
     | '/about'
     | '/academics'
     | '/admissions'
@@ -229,16 +418,36 @@ export interface FileRouteTypes {
     | '/islamic-education'
     | '/students'
     | '/faculty/portal'
+    | '/admin/academic-structure'
+    | '/admin/academic-years'
+    | '/admin/account'
     | '/admin/admissions'
+    | '/admin/attendance'
+    | '/admin/audit'
+    | '/admin/calendar'
     | '/admin/class-materials'
+    | '/admin/contact'
     | '/admin/dashboard'
     | '/admin/faculty'
     | '/admin/faculty-accounts'
+    | '/admin/fees'
     | '/admin/gallery'
+    | '/admin/guardians'
+    | '/admin/import'
     | '/admin/login'
     | '/admin/settings'
+    | '/admin/students'
+    | '/admin/year-end'
+    | '/parent/account'
+    | '/parent/children'
+    | '/parent/login'
+    | '/parent/'
+    | '/faculty/portal/account'
+    | '/faculty/portal/attendance'
+    | '/faculty/portal/home'
     | '/faculty/portal/materials'
     | '/faculty/portal/profile'
+    | '/parent/children/$studentId'
     | '/faculty/portal/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -252,22 +461,43 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/islamic-education'
     | '/students'
+    | '/admin/academic-structure'
+    | '/admin/academic-years'
+    | '/admin/account'
     | '/admin/admissions'
+    | '/admin/attendance'
+    | '/admin/audit'
+    | '/admin/calendar'
     | '/admin/class-materials'
+    | '/admin/contact'
     | '/admin/dashboard'
     | '/admin/faculty'
     | '/admin/faculty-accounts'
+    | '/admin/fees'
     | '/admin/gallery'
+    | '/admin/guardians'
+    | '/admin/import'
     | '/admin/login'
     | '/admin/settings'
+    | '/admin/students'
+    | '/admin/year-end'
+    | '/parent/account'
+    | '/parent/children'
+    | '/parent/login'
+    | '/parent'
+    | '/faculty/portal/account'
+    | '/faculty/portal/attendance'
+    | '/faculty/portal/home'
     | '/faculty/portal/materials'
     | '/faculty/portal/profile'
+    | '/parent/children/$studentId'
     | '/faculty/portal'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/faculty'
+    | '/parent'
     | '/about'
     | '/academics'
     | '/admissions'
@@ -276,16 +506,36 @@ export interface FileRouteTypes {
     | '/islamic-education'
     | '/students'
     | '/faculty/portal'
+    | '/admin/academic-structure'
+    | '/admin/academic-years'
+    | '/admin/account'
     | '/admin/admissions'
+    | '/admin/attendance'
+    | '/admin/audit'
+    | '/admin/calendar'
     | '/admin/class-materials'
+    | '/admin/contact'
     | '/admin/dashboard'
     | '/admin/faculty'
     | '/admin/faculty-accounts'
+    | '/admin/fees'
     | '/admin/gallery'
+    | '/admin/guardians'
+    | '/admin/import'
     | '/admin/login'
     | '/admin/settings'
+    | '/admin/students'
+    | '/admin/year-end'
+    | '/parent/account'
+    | '/parent/children'
+    | '/parent/login'
+    | '/parent/'
+    | '/faculty/portal/account'
+    | '/faculty/portal/attendance'
+    | '/faculty/portal/home'
     | '/faculty/portal/materials'
     | '/faculty/portal/profile'
+    | '/parent/children/$studentId'
     | '/faculty/portal/'
   fileRoutesById: FileRoutesById
 }
@@ -293,6 +543,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   FacultyRouteRoute: typeof FacultyRouteRouteWithChildren
+  ParentRouteRoute: typeof ParentRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AcademicsRoute: typeof AcademicsRoute
   AdmissionsRoute: typeof AdmissionsRoute
@@ -353,6 +604,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/parent': {
+      id: '/parent'
+      path: '/parent'
+      fullPath: '/parent'
+      preLoaderRoute: typeof ParentRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/faculty': {
       id: '/faculty'
       path: '/faculty'
@@ -374,6 +632,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/parent/': {
+      id: '/parent/'
+      path: '/'
+      fullPath: '/parent/'
+      preLoaderRoute: typeof ParentIndexRouteImport
+      parentRoute: typeof ParentRouteRoute
+    }
+    '/parent/login': {
+      id: '/parent/login'
+      path: '/login'
+      fullPath: '/parent/login'
+      preLoaderRoute: typeof ParentLoginRouteImport
+      parentRoute: typeof ParentRouteRoute
+    }
+    '/parent/children': {
+      id: '/parent/children'
+      path: '/children'
+      fullPath: '/parent/children'
+      preLoaderRoute: typeof ParentChildrenRouteImport
+      parentRoute: typeof ParentRouteRoute
+    }
+    '/parent/account': {
+      id: '/parent/account'
+      path: '/account'
+      fullPath: '/parent/account'
+      preLoaderRoute: typeof ParentAccountRouteImport
+      parentRoute: typeof ParentRouteRoute
+    }
+    '/admin/year-end': {
+      id: '/admin/year-end'
+      path: '/year-end'
+      fullPath: '/admin/year-end'
+      preLoaderRoute: typeof AdminYearEndRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/students': {
+      id: '/admin/students'
+      path: '/students'
+      fullPath: '/admin/students'
+      preLoaderRoute: typeof AdminStudentsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/settings': {
       id: '/admin/settings'
       path: '/settings'
@@ -388,11 +688,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/import': {
+      id: '/admin/import'
+      path: '/import'
+      fullPath: '/admin/import'
+      preLoaderRoute: typeof AdminImportRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/guardians': {
+      id: '/admin/guardians'
+      path: '/guardians'
+      fullPath: '/admin/guardians'
+      preLoaderRoute: typeof AdminGuardiansRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/gallery': {
       id: '/admin/gallery'
       path: '/gallery'
       fullPath: '/admin/gallery'
       preLoaderRoute: typeof AdminGalleryRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/fees': {
+      id: '/admin/fees'
+      path: '/fees'
+      fullPath: '/admin/fees'
+      preLoaderRoute: typeof AdminFeesRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/faculty-accounts': {
@@ -416,6 +737,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/contact': {
+      id: '/admin/contact'
+      path: '/contact'
+      fullPath: '/admin/contact'
+      preLoaderRoute: typeof AdminContactRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/class-materials': {
       id: '/admin/class-materials'
       path: '/class-materials'
@@ -423,11 +751,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminClassMaterialsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/calendar': {
+      id: '/admin/calendar'
+      path: '/calendar'
+      fullPath: '/admin/calendar'
+      preLoaderRoute: typeof AdminCalendarRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/attendance': {
+      id: '/admin/attendance'
+      path: '/attendance'
+      fullPath: '/admin/attendance'
+      preLoaderRoute: typeof AdminAttendanceRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/admissions': {
       id: '/admin/admissions'
       path: '/admissions'
       fullPath: '/admin/admissions'
       preLoaderRoute: typeof AdminAdmissionsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/account': {
+      id: '/admin/account'
+      path: '/account'
+      fullPath: '/admin/account'
+      preLoaderRoute: typeof AdminAccountRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/academic-years': {
+      id: '/admin/academic-years'
+      path: '/academic-years'
+      fullPath: '/admin/academic-years'
+      preLoaderRoute: typeof AdminAcademicYearsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/academic-structure': {
+      id: '/admin/academic-structure'
+      path: '/academic-structure'
+      fullPath: '/admin/academic-structure'
+      preLoaderRoute: typeof AdminAcademicStructureRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/faculty/portal': {
@@ -444,6 +814,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacultyPortalIndexRouteImport
       parentRoute: typeof FacultyPortalRouteRoute
     }
+    '/parent/children/$studentId': {
+      id: '/parent/children/$studentId'
+      path: '/$studentId'
+      fullPath: '/parent/children/$studentId'
+      preLoaderRoute: typeof ParentChildrenStudentIdRouteImport
+      parentRoute: typeof ParentChildrenRoute
+    }
     '/faculty/portal/profile': {
       id: '/faculty/portal/profile'
       path: '/profile'
@@ -458,29 +835,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FacultyPortalMaterialsRouteImport
       parentRoute: typeof FacultyPortalRouteRoute
     }
+    '/faculty/portal/home': {
+      id: '/faculty/portal/home'
+      path: '/home'
+      fullPath: '/faculty/portal/home'
+      preLoaderRoute: typeof FacultyPortalHomeRouteImport
+      parentRoute: typeof FacultyPortalRouteRoute
+    }
+    '/faculty/portal/attendance': {
+      id: '/faculty/portal/attendance'
+      path: '/attendance'
+      fullPath: '/faculty/portal/attendance'
+      preLoaderRoute: typeof FacultyPortalAttendanceRouteImport
+      parentRoute: typeof FacultyPortalRouteRoute
+    }
+    '/faculty/portal/account': {
+      id: '/faculty/portal/account'
+      path: '/account'
+      fullPath: '/faculty/portal/account'
+      preLoaderRoute: typeof FacultyPortalAccountRouteImport
+      parentRoute: typeof FacultyPortalRouteRoute
+    }
   }
 }
 
 interface AdminRouteRouteChildren {
+  AdminAcademicStructureRoute: typeof AdminAcademicStructureRoute
+  AdminAcademicYearsRoute: typeof AdminAcademicYearsRoute
+  AdminAccountRoute: typeof AdminAccountRoute
   AdminAdmissionsRoute: typeof AdminAdmissionsRoute
+  AdminAttendanceRoute: typeof AdminAttendanceRoute
+  AdminAuditRoute: typeof AdminAuditRoute
+  AdminCalendarRoute: typeof AdminCalendarRoute
   AdminClassMaterialsRoute: typeof AdminClassMaterialsRoute
+  AdminContactRoute: typeof AdminContactRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminFacultyRoute: typeof AdminFacultyRoute
   AdminFacultyAccountsRoute: typeof AdminFacultyAccountsRoute
+  AdminFeesRoute: typeof AdminFeesRoute
   AdminGalleryRoute: typeof AdminGalleryRoute
+  AdminGuardiansRoute: typeof AdminGuardiansRoute
+  AdminImportRoute: typeof AdminImportRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminStudentsRoute: typeof AdminStudentsRoute
+  AdminYearEndRoute: typeof AdminYearEndRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminAcademicStructureRoute: AdminAcademicStructureRoute,
+  AdminAcademicYearsRoute: AdminAcademicYearsRoute,
+  AdminAccountRoute: AdminAccountRoute,
   AdminAdmissionsRoute: AdminAdmissionsRoute,
+  AdminAttendanceRoute: AdminAttendanceRoute,
+  AdminAuditRoute: AdminAuditRoute,
+  AdminCalendarRoute: AdminCalendarRoute,
   AdminClassMaterialsRoute: AdminClassMaterialsRoute,
+  AdminContactRoute: AdminContactRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminFacultyRoute: AdminFacultyRoute,
   AdminFacultyAccountsRoute: AdminFacultyAccountsRoute,
+  AdminFeesRoute: AdminFeesRoute,
   AdminGalleryRoute: AdminGalleryRoute,
+  AdminGuardiansRoute: AdminGuardiansRoute,
+  AdminImportRoute: AdminImportRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminSettingsRoute: AdminSettingsRoute,
+  AdminStudentsRoute: AdminStudentsRoute,
+  AdminYearEndRoute: AdminYearEndRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
@@ -488,12 +910,18 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 )
 
 interface FacultyPortalRouteRouteChildren {
+  FacultyPortalAccountRoute: typeof FacultyPortalAccountRoute
+  FacultyPortalAttendanceRoute: typeof FacultyPortalAttendanceRoute
+  FacultyPortalHomeRoute: typeof FacultyPortalHomeRoute
   FacultyPortalMaterialsRoute: typeof FacultyPortalMaterialsRoute
   FacultyPortalProfileRoute: typeof FacultyPortalProfileRoute
   FacultyPortalIndexRoute: typeof FacultyPortalIndexRoute
 }
 
 const FacultyPortalRouteRouteChildren: FacultyPortalRouteRouteChildren = {
+  FacultyPortalAccountRoute: FacultyPortalAccountRoute,
+  FacultyPortalAttendanceRoute: FacultyPortalAttendanceRoute,
+  FacultyPortalHomeRoute: FacultyPortalHomeRoute,
   FacultyPortalMaterialsRoute: FacultyPortalMaterialsRoute,
   FacultyPortalProfileRoute: FacultyPortalProfileRoute,
   FacultyPortalIndexRoute: FacultyPortalIndexRoute,
@@ -514,10 +942,41 @@ const FacultyRouteRouteWithChildren = FacultyRouteRoute._addFileChildren(
   FacultyRouteRouteChildren,
 )
 
+interface ParentChildrenRouteChildren {
+  ParentChildrenStudentIdRoute: typeof ParentChildrenStudentIdRoute
+}
+
+const ParentChildrenRouteChildren: ParentChildrenRouteChildren = {
+  ParentChildrenStudentIdRoute: ParentChildrenStudentIdRoute,
+}
+
+const ParentChildrenRouteWithChildren = ParentChildrenRoute._addFileChildren(
+  ParentChildrenRouteChildren,
+)
+
+interface ParentRouteRouteChildren {
+  ParentAccountRoute: typeof ParentAccountRoute
+  ParentChildrenRoute: typeof ParentChildrenRouteWithChildren
+  ParentLoginRoute: typeof ParentLoginRoute
+  ParentIndexRoute: typeof ParentIndexRoute
+}
+
+const ParentRouteRouteChildren: ParentRouteRouteChildren = {
+  ParentAccountRoute: ParentAccountRoute,
+  ParentChildrenRoute: ParentChildrenRouteWithChildren,
+  ParentLoginRoute: ParentLoginRoute,
+  ParentIndexRoute: ParentIndexRoute,
+}
+
+const ParentRouteRouteWithChildren = ParentRouteRoute._addFileChildren(
+  ParentRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRouteRoute: AdminRouteRouteWithChildren,
   FacultyRouteRoute: FacultyRouteRouteWithChildren,
+  ParentRouteRoute: ParentRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AcademicsRoute: AcademicsRoute,
   AdmissionsRoute: AdmissionsRoute,
