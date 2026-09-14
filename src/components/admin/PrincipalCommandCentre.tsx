@@ -331,7 +331,16 @@ function CommandCentreBody({ data }: { data: PrincipalCommandData }) {
             <ChartContainer config={strengthConfig} className="aspect-auto h-64">
               <BarChart data={data.classStrength}>
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="className" tickLine={false} axisLine={false} interval={0} />
+                <XAxis
+                  dataKey="className"
+                  tickLine={false}
+                  axisLine={false}
+                  interval={0}
+                  angle={-45}
+                  textAnchor="end"
+                  height={72}
+                  tickMargin={8}
+                />
                 <YAxis allowDecimals={false} width={32} />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="students" fill="var(--color-students)" radius={4} />
@@ -355,7 +364,16 @@ function CommandCentreBody({ data }: { data: PrincipalCommandData }) {
             <ChartContainer config={duesConfig} className="aspect-auto h-64">
               <BarChart data={data.fees.byClass}>
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="className" tickLine={false} axisLine={false} interval={0} />
+                <XAxis
+                  dataKey="className"
+                  tickLine={false}
+                  axisLine={false}
+                  interval={0}
+                  angle={-45}
+                  textAnchor="end"
+                  height={72}
+                  tickMargin={8}
+                />
                 <YAxis width={48} tickFormatter={(value) => `${Math.round(Number(value) / 1000)}k`} />
                 <ChartTooltip
                   content={<ChartTooltipContent formatter={(value) => formatInr(Number(value))} />}
