@@ -11,7 +11,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { AuthError } from "@/lib/auth";
 import {
   changePasswordWithCurrent,
-  sendPasswordResetEmail,
 } from "@/services/account-centre";
 import {
   fetchOwnGuardianProfile,
@@ -168,18 +167,6 @@ export function ParentAccountCentre() {
                 <KeyRound className="size-4" />
               )}
               Change password
-            </Button>
-            <Button
-              variant="outline"
-              type="button"
-              onClick={() => {
-                if (!auth?.email) return;
-                void sendPasswordResetEmail(auth.email, "/parent/login").then(() =>
-                  toast.success("Reset email sent."),
-                );
-              }}
-            >
-              Email reset link
             </Button>
           </div>
         </CardContent>

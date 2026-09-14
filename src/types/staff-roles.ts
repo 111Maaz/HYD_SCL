@@ -66,6 +66,12 @@ export function isInchargeRole(roleKey: StaffRoleKey | null | undefined): boolea
   return (INCHARGE_ROLE_KEYS as readonly string[]).includes(roleKey);
 }
 
+export function isAboveVicePrincipalAuthority(
+  roleKey: StaffRoleKey | null | undefined,
+): boolean {
+  return roleKey === "PRINCIPAL" || roleKey === "VICE_PRINCIPAL";
+}
+
 /** Class assignment applies to Teacher / Staff only (optional teaching class). */
 export function roleUsesAssignedClass(roleKey: StaffRoleKey | null | undefined): boolean {
   return roleKey === "TEACHER" || roleKey === "STAFF";

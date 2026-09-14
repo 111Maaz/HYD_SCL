@@ -9,12 +9,12 @@ import { LogOut, User, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { requireParent } from "@/lib/route-guards";
+import { isPublicParentAuthPath, requireParent } from "@/lib/route-guards";
 import { SITE } from "@/lib/site";
 
 export const Route = createFileRoute("/parent")({
   beforeLoad: async ({ location }) => {
-    if (location.pathname === "/parent/login") {
+    if (isPublicParentAuthPath(location.pathname)) {
       return;
     }
 
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/parent")({
 function ParentLayout() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
-  if (pathname === "/parent/login") {
+  if (isPublicParentAuthPath(pathname)) {
     return <Outlet />;
   }
 

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Camera, KeyRound, Loader2, Mail, Save } from "lucide-react";
+import { Camera, KeyRound, Loader2, Save } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -17,7 +17,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { AuthError, getStaffRoleLabel } from "@/lib/auth";
 import {
   changePasswordWithCurrent,
-  sendPasswordResetEmail,
   updateOwnAccountProfile,
   uploadOwnStaffPhoto,
 } from "@/services/account-centre";
@@ -102,12 +101,6 @@ export function AccountCentre() {
     },
     onError: (err: Error) =>
       toast.error(err instanceof AuthError ? err.message : err.message),
-  });
-
-  const resetEmailMutation = useMutation({
-    mutationFn: () => sendPasswordResetEmail(auth!.email),
-    onSuccess: () => toast.success("Password reset link sent to your email."),
-    onError: (err: Error) => toast.error(err.message),
   });
 
   if (isLoading) return <AdminLoadingState label="Loading account centre…" />;
@@ -253,8 +246,7 @@ export function AccountCentre() {
                 Password
               </CardTitle>
               <CardDescription>
-                Change with your current password, or send a reset link to your email. Mobile OTP can
-                be enabled later when SMS auth is configured on the project.
+                Enter your current password, then choose a new one.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -314,15 +306,6 @@ export function AccountCentre() {
                       <Loader2 className="size-4 animate-spin" />
                     ) : null}
                     Update password
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={resetEmailMutation.isPending}
-                    onClick={() => resetEmailMutation.mutate()}
-                  >
-                    <Mail className="size-4" />
-                    Email reset link
                   </Button>
                 </div>
               </form>

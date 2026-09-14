@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { useAuth } from "@/hooks/useAuth";
 import {
   createFacultyAccountFn,
   listFacultyProfilesFn,
@@ -54,6 +55,7 @@ import {
   ASSIGNABLE_STAFF_ROLE_KEYS,
   INCHARGE_ROLE_KEYS,
   STAFF_ROLE_LABELS,
+  isAboveVicePrincipalAuthority,
   isSchoolWideStaffRole,
   roleUsesAssignedClass,
   type StaffRoleKey,
@@ -100,6 +102,11 @@ function formatClassCell(account: StaffAccountRow): string {
 }
 
 export function FacultyAccountsAdmin() {
+  const { auth } = useAuth();
+  const actorIsPrincipal = auth?.staffRoleKey === "PRINCIPAL";
+  const assignableRoleKeys = actorIsPrincipal
+    ? ASSIGNABLE_STAFF_ROLE_KEYS
+    : ASSIGNABLE_STAFF_ROLE_KEYS.filter((key) => key !== "VICE_PRINCIPAL");
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -243,6 +250,8 @@ export function FacultyAccountsAdmin() {
               accounts.map((account) => {
                 const name = getStaffDisplayName(account);
                 const portalActive = isStaffPortalActive(account);
+                const lockedForVp =
+                  !actorIsPrincipal && isAboveVicePrincipalAuthority(account.staff_role_key);
                 return (
                   <TableRow key={account.id}>
                     <TableCell className="font-medium">
@@ -261,7 +270,7 @@ export function FacultyAccountsAdmin() {
                       <div className="flex items-center gap-3">
                         <Switch
                           checked={portalActive}
-                          disabled={toggleActiveMutation.isPending}
+                          disabled={toggleActiveMutation.isPending || lockedForVp}
                           onCheckedChange={(checked) =>
                             toggleActiveMutation.mutate({
                               profileId: account.id,
@@ -271,7 +280,11 @@ export function FacultyAccountsAdmin() {
                           aria-label={`Portal access for ${name}`}
                         />
                         <span className="text-sm text-muted-foreground">
-                          {portalActive ? "Active" : "Off"}
+                          {lockedForVp
+                            ? "Principal only"
+                            : portalActive
+                              ? "Active"
+                              : "Off"}
                         </span>
                       </div>
                     </TableCell>
@@ -279,6 +292,7 @@ export function FacultyAccountsAdmin() {
                       <Button
                         variant="outline"
                         size="sm"
+                        disabled={lockedForVp}
                         onClick={() => openEdit(account)}
                         aria-label={`Edit ${name}`}
                       >
@@ -355,7 +369,7 @@ export function FacultyAccountsAdmin() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {ASSIGNABLE_STAFF_ROLE_KEYS.map((key) => (
+                    {assignableRoleKeys.map((key) => (
                       <SelectItem key={key} value={key}>
                         {STAFF_ROLE_LABELS[key]}
                       </SelectItem>
@@ -512,7 +526,7 @@ export function FacultyAccountsAdmin() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {ASSIGNABLE_STAFF_ROLE_KEYS.map((key) => (
+                    {assignableRoleKeys.map((key) => (
                       <SelectItem key={key} value={key}>
                         {STAFF_ROLE_LABELS[key]}
                       </SelectItem>

@@ -1,5 +1,9 @@
 # Hyderabad School — Project Audit & Progress Report
 
+> **⚠️ HISTORICAL (16 June 2026)** — Pre-ERP CMS phase only. Do not use for implementation or AI context.  
+> **Current status:** [`docs/PLATFORM_PROGRESS_REPORT.md`](docs/PLATFORM_PROGRESS_REPORT.md)  
+> **Forward plan:** [`docs/PLATFORM_IMPLEMENTATION_PLAN.md`](docs/PLATFORM_IMPLEMENTATION_PLAN.md)
+
 **Last updated:** 16 June 2026  
 **Stack:** TanStack Start + React 19 + TypeScript + Supabase + Tailwind v4  
 **Scope:** Living audit tracking public site, admin portal, faculty portal, database, and open work.

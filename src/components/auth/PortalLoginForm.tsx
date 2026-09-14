@@ -97,6 +97,15 @@ export function PortalLoginForm({ portal }: PortalLoginFormProps) {
               />
             </div>
 
+            <div className="-mt-2 text-right">
+              <Link
+                to={isParent ? "/parent/forgot-password" : "/admin/forgot-password"}
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
             <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
@@ -108,24 +117,6 @@ export function PortalLoginForm({ portal }: PortalLoginFormProps) {
               )}
             </Button>
           </form>
-
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            {isParent ? (
-              <>
-                Staff member?{" "}
-                <Link to="/admin/login" className="font-medium text-primary hover:underline">
-                  Staff Login
-                </Link>
-              </>
-            ) : (
-              <>
-                Parent?{" "}
-                <Link to="/parent/login" className="font-medium text-primary hover:underline">
-                  Parent Login
-                </Link>
-              </>
-            )}
-          </p>
         </CardContent>
       </Card>
     </div>

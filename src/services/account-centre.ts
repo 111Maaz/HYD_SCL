@@ -85,15 +85,48 @@ export async function changePasswordWithCurrent(
   }
 }
 
-/** Send a password-reset / recovery email (OTP link). */
+export type PasswordResetPortal = "staff" | "parent";
+
+export function passwordResetRedirectPath(
+  portal: PasswordResetPortal,
+): "/admin/reset-password" | "/parent/reset-password" {
+  return portal === "parent" ? "/parent/reset-password" : "/admin/reset-password";
+}
+
+/** Send a password-reset email with a one-time code (and a recovery link as backup). */
 export async function sendPasswordResetEmail(
   email: string,
-  redirectPath: "/admin/login" | "/parent/login" = "/admin/login",
+  portal: PasswordResetPortal = "staff",
 ): Promise<void> {
   const supabase = createSupabaseBrowserClient();
-  const redirectTo = `${window.location.origin}${redirectPath}`;
-  const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+  const redirectTo = `${window.location.origin}${passwordResetRedirectPath(portal)}`;
+  const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+    redirectTo,
+  });
   if (error) {
     throw new AuthError(error.message || "Failed to send reset email.");
   }
+}
+
+/** Confirm the 6-digit recovery code from email. */
+export async function verifyPasswordResetOtp(email: string, token: string): Promise<void> {
+  const supabase = createSupabaseBrowserClient();
+  const { error } = await supabase.auth.verifyOtp({
+    email: email.trim(),
+    token: token.trim(),
+    type: "recovery",
+  });
+  if (error) {
+    throw new AuthError(error.message || "That code is invalid or has expired.");
+  }
+}
+
+/** Set a new password after a recovery session (OTP or email link). */
+export async function completePasswordRecovery(newPassword: string): Promise<void> {
+  const supabase = createSupabaseBrowserClient();
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  if (error) {
+    throw new AuthError(error.message || "Failed to update password.");
+  }
+  await supabase.auth.signOut();
 }

@@ -7,8 +7,10 @@ import type { StaffProfile } from "@/types/database";
 import {
   ASSIGNABLE_STAFF_ROLE_KEYS,
   INCHARGE_ROLE_KEYS,
+  isAboveVicePrincipalAuthority,
   isInchargeRole,
   isSchoolWideStaffRole,
+  isStaffRoleKey,
   pickPrimaryStaffRoleKey,
   roleUsesAssignedClass,
   type StaffRoleKey,
@@ -125,6 +127,67 @@ async function requireAdminOnServer() {
   return user;
 }
 
+function privilegedStaffClient() {
+  try {
+    return createSupabaseAdminClient();
+  } catch {
+    return createSupabaseServerClient();
+  }
+}
+
+async function loadActiveRoleKeysForStaff(
+  client: ReturnType<typeof createSupabaseServerClient>,
+  staffId: string,
+): Promise<StaffRoleKey[]> {
+  const { data, error } = await client
+    .from("staff_roles")
+    .select("active, roles ( role_key )")
+    .eq("staff_id", staffId)
+    .eq("active", true);
+
+  if (error) return [];
+
+  return (data ?? [])
+    .map((row) => (row.roles as { role_key: string } | null)?.role_key)
+    .filter((key): key is StaffRoleKey => !!key && isStaffRoleKey(key));
+}
+
+async function getActorPrimaryRole(): Promise<StaffRoleKey | null> {
+  const supabase = createSupabaseServerClient();
+  const { data: actorKeys, error: actorKeysError } = await supabase.rpc("get_my_staff_role_keys");
+  if (actorKeysError) {
+    throw new AuthError(actorKeysError.message);
+  }
+  return pickPrimaryStaffRoleKey(Array.isArray(actorKeys) ? (actorKeys as StaffRoleKey[]) : []);
+}
+
+async function assertCanManageStaffProfile(targetProfileId: string) {
+  const actor = await requireAdminOnServer();
+  const actorPrimary = await getActorPrimaryRole();
+
+  const directory = privilegedStaffClient();
+  const targetKeys = await loadActiveRoleKeysForStaff(directory, targetProfileId);
+  const targetPrimary = pickPrimaryStaffRoleKey(targetKeys);
+
+  if (isAboveVicePrincipalAuthority(targetPrimary) && actorPrimary !== "PRINCIPAL") {
+    throw new AuthError(
+      targetPrimary === "PRINCIPAL"
+        ? "Only the Principal can change the Principal account."
+        : "Only the Principal can change Vice Principal accounts.",
+    );
+  }
+
+  return actor;
+}
+
+async function assertCanAssignLeadershipRole(staffRoleKey: StaffRoleKey) {
+  if (staffRoleKey !== "VICE_PRINCIPAL") return;
+  const actorPrimary = await getActorPrimaryRole();
+  if (actorPrimary !== "PRINCIPAL") {
+    throw new AuthError("Only the Principal can grant the Vice Principal role.");
+  }
+}
+
 function resolveAssignedClass(
   staffRoleKey: StaffRoleKey,
   assignedClass: number | null | undefined,
@@ -227,6 +290,10 @@ function splitListedRoles(activeKeys: StaffRoleKey[]): {
   also_incharge_role_key: StaffRoleKey | null;
 } {
   const primary = pickPrimaryStaffRoleKey(activeKeys);
+  if (primary === "PRINCIPAL" || primary === "VICE_PRINCIPAL") {
+    return { staff_role_key: primary, also_incharge_role_key: null };
+  }
+
   const teaching = activeKeys.find((k) => roleUsesAssignedClass(k)) ?? null;
   const incharge = activeKeys.find((k) => isInchargeRole(k)) ?? null;
 
@@ -242,6 +309,8 @@ export const createFacultyAccountFn = createServerFn({ method: "POST" })
   .validator(createFacultyAccountSchema)
   .handler(async ({ data }): Promise<StaffProfile> => {
     await requireAdminOnServer();
+    const staffRoleKey = data.staffRoleKey ?? "TEACHER";
+    await assertCanAssignLeadershipRole(staffRoleKey);
 
     let adminClient;
     try {
@@ -254,7 +323,6 @@ export const createFacultyAccountFn = createServerFn({ method: "POST" })
       );
     }
 
-    const staffRoleKey = data.staffRoleKey ?? "TEACHER";
     const roleKeys = resolveActiveRoleKeys(staffRoleKey, data.alsoInchargeRoleKey);
     const assignedClass = resolveAssignedClass(staffRoleKey, data.assignedClass);
     const metaRole = appMetaRole(roleKeys);
@@ -336,7 +404,7 @@ export const listFacultyProfilesFn = createServerFn({ method: "GET" }).handler(
   async (): Promise<StaffAccountRow[]> => {
     await requireAdminOnServer();
 
-    const supabase = createSupabaseServerClient();
+    const supabase = privilegedStaffClient();
     const { data, error } = await supabase
       .from("staff_profiles")
       .select(
@@ -381,7 +449,10 @@ export const listFacultyProfilesFn = createServerFn({ method: "GET" }).handler(
 export const updateFacultyAccountFn = createServerFn({ method: "POST" })
   .validator(updateFacultyAccountSchema)
   .handler(async ({ data }): Promise<StaffProfile> => {
-    await requireAdminOnServer();
+    await assertCanManageStaffProfile(data.profileId);
+    if (data.staffRoleKey) {
+      await assertCanAssignLeadershipRole(data.staffRoleKey);
+    }
 
     const supabase = createSupabaseServerClient();
     const { data: existing, error: existingError } = await supabase
@@ -453,7 +524,7 @@ const setFacultyAccountActiveSchema = z.object({
 export const setFacultyAccountActiveFn = createServerFn({ method: "POST" })
   .validator(setFacultyAccountActiveSchema)
   .handler(async ({ data }): Promise<StaffProfile> => {
-    await requireAdminOnServer();
+    await assertCanManageStaffProfile(data.profileId);
 
     let adminClient;
     try {

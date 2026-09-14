@@ -50,6 +50,26 @@ export async function requireParent() {
   return requireRole("parent");
 }
 
+const PUBLIC_ADMIN_AUTH_PATHS = new Set([
+  "/admin/login",
+  "/admin/forgot-password",
+  "/admin/reset-password",
+]);
+
+const PUBLIC_PARENT_AUTH_PATHS = new Set([
+  "/parent/login",
+  "/parent/forgot-password",
+  "/parent/reset-password",
+]);
+
+export function isPublicAdminAuthPath(pathname: string): boolean {
+  return PUBLIC_ADMIN_AUTH_PATHS.has(pathname);
+}
+
+export function isPublicParentAuthPath(pathname: string): boolean {
+  return PUBLIC_PARENT_AUTH_PATHS.has(pathname);
+}
+
 export async function redirectIfAuthenticated() {
   try {
     const auth = await getAuthState();

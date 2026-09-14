@@ -138,7 +138,9 @@ async function fetchStaffProfile(
   const split = splitStaffRoles(roleKeys);
 
   if (!split.staffRoleKey && roleKeys.length === 0) {
-    return null;
+    throw new AuthError(
+      "This staff account has no ERP role assigned. Open Faculty Accounts and grant Principal (or the correct role), then try again.",
+    );
   }
 
   return {
@@ -271,7 +273,7 @@ export async function signIn(
   if (!profile) {
     await supabase.auth.signOut();
     throw new AuthError(
-      "No active staff or parent profile found for this account. Contact the school office.",
+      "No active staff or parent profile is linked to this login. If you are the Principal, your staff row may be missing an ERP role — run the principal login migration or grant PRINCIPAL in Faculty Accounts.",
     );
   }
 

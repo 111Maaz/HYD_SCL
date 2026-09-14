@@ -1,5 +1,9 @@
 # Hyderabad School — Complete Website Blueprint
 
+> **⚠️ HISTORICAL (17 June 2026)** — Pre-ERP CMS era. References dropped tables (`users`, `faculty_profiles`). Do not use for AI prompts or ERP work.  
+> **Current status:** [`docs/PLATFORM_PROGRESS_REPORT.md`](../docs/PLATFORM_PROGRESS_REPORT.md)  
+> **Forward plan:** [`docs/PLATFORM_IMPLEMENTATION_PLAN.md`](../docs/PLATFORM_IMPLEMENTATION_PLAN.md)
+
 > **Purpose**: This document is the single source of truth for understanding, maintaining, debugging, and restoring every aspect of the Hyderabad School website. If something breaks, this report tells you **what** exists, **how** it works, and **why** it was built that way.
 
 > **Last Updated**: 2026-06-17

@@ -21,16 +21,20 @@ import { Route as FacultyRouteRouteImport } from './routes/faculty/route'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ParentIndexRouteImport } from './routes/parent/index'
+import { Route as ParentResetPasswordRouteImport } from './routes/parent/reset-password'
 import { Route as ParentLoginRouteImport } from './routes/parent/login'
+import { Route as ParentForgotPasswordRouteImport } from './routes/parent/forgot-password'
 import { Route as ParentChildrenRouteImport } from './routes/parent/children'
 import { Route as ParentAccountRouteImport } from './routes/parent/account'
 import { Route as AdminYearEndRouteImport } from './routes/admin/year-end'
 import { Route as AdminStudentsRouteImport } from './routes/admin/students'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
+import { Route as AdminResetPasswordRouteImport } from './routes/admin/reset-password'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as AdminImportRouteImport } from './routes/admin/import'
 import { Route as AdminGuardiansRouteImport } from './routes/admin/guardians'
 import { Route as AdminGalleryRouteImport } from './routes/admin/gallery'
+import { Route as AdminForgotPasswordRouteImport } from './routes/admin/forgot-password'
 import { Route as AdminFeesRouteImport } from './routes/admin/fees'
 import { Route as AdminFacultyAccountsRouteImport } from './routes/admin/faculty-accounts'
 import { Route as AdminFacultyRouteImport } from './routes/admin/faculty'
@@ -113,9 +117,19 @@ const ParentIndexRoute = ParentIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ParentRouteRoute,
 } as any)
+const ParentResetPasswordRoute = ParentResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => ParentRouteRoute,
+} as any)
 const ParentLoginRoute = ParentLoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => ParentRouteRoute,
+} as any)
+const ParentForgotPasswordRoute = ParentForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => ParentRouteRoute,
 } as any)
 const ParentChildrenRoute = ParentChildrenRouteImport.update({
@@ -143,6 +157,11 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminResetPasswordRoute = AdminResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -161,6 +180,11 @@ const AdminGuardiansRoute = AdminGuardiansRouteImport.update({
 const AdminGalleryRoute = AdminGalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminForgotPasswordRoute = AdminForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const AdminFeesRoute = AdminFeesRouteImport.update({
@@ -295,16 +319,20 @@ export interface FileRoutesByFullPath {
   '/admin/faculty': typeof AdminFacultyRoute
   '/admin/faculty-accounts': typeof AdminFacultyAccountsRoute
   '/admin/fees': typeof AdminFeesRoute
+  '/admin/forgot-password': typeof AdminForgotPasswordRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/guardians': typeof AdminGuardiansRoute
   '/admin/import': typeof AdminImportRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
   '/admin/year-end': typeof AdminYearEndRoute
   '/parent/account': typeof ParentAccountRoute
   '/parent/children': typeof ParentChildrenRouteWithChildren
+  '/parent/forgot-password': typeof ParentForgotPasswordRoute
   '/parent/login': typeof ParentLoginRoute
+  '/parent/reset-password': typeof ParentResetPasswordRoute
   '/parent/': typeof ParentIndexRoute
   '/faculty/portal/account': typeof FacultyPortalAccountRoute
   '/faculty/portal/attendance': typeof FacultyPortalAttendanceRoute
@@ -338,16 +366,20 @@ export interface FileRoutesByTo {
   '/admin/faculty': typeof AdminFacultyRoute
   '/admin/faculty-accounts': typeof AdminFacultyAccountsRoute
   '/admin/fees': typeof AdminFeesRoute
+  '/admin/forgot-password': typeof AdminForgotPasswordRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/guardians': typeof AdminGuardiansRoute
   '/admin/import': typeof AdminImportRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
   '/admin/year-end': typeof AdminYearEndRoute
   '/parent/account': typeof ParentAccountRoute
   '/parent/children': typeof ParentChildrenRouteWithChildren
+  '/parent/forgot-password': typeof ParentForgotPasswordRoute
   '/parent/login': typeof ParentLoginRoute
+  '/parent/reset-password': typeof ParentResetPasswordRoute
   '/parent': typeof ParentIndexRoute
   '/faculty/portal/account': typeof FacultyPortalAccountRoute
   '/faculty/portal/attendance': typeof FacultyPortalAttendanceRoute
@@ -384,16 +416,20 @@ export interface FileRoutesById {
   '/admin/faculty': typeof AdminFacultyRoute
   '/admin/faculty-accounts': typeof AdminFacultyAccountsRoute
   '/admin/fees': typeof AdminFeesRoute
+  '/admin/forgot-password': typeof AdminForgotPasswordRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/guardians': typeof AdminGuardiansRoute
   '/admin/import': typeof AdminImportRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/reset-password': typeof AdminResetPasswordRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/students': typeof AdminStudentsRoute
   '/admin/year-end': typeof AdminYearEndRoute
   '/parent/account': typeof ParentAccountRoute
   '/parent/children': typeof ParentChildrenRouteWithChildren
+  '/parent/forgot-password': typeof ParentForgotPasswordRoute
   '/parent/login': typeof ParentLoginRoute
+  '/parent/reset-password': typeof ParentResetPasswordRoute
   '/parent/': typeof ParentIndexRoute
   '/faculty/portal/account': typeof FacultyPortalAccountRoute
   '/faculty/portal/attendance': typeof FacultyPortalAttendanceRoute
@@ -431,16 +467,20 @@ export interface FileRouteTypes {
     | '/admin/faculty'
     | '/admin/faculty-accounts'
     | '/admin/fees'
+    | '/admin/forgot-password'
     | '/admin/gallery'
     | '/admin/guardians'
     | '/admin/import'
     | '/admin/login'
+    | '/admin/reset-password'
     | '/admin/settings'
     | '/admin/students'
     | '/admin/year-end'
     | '/parent/account'
     | '/parent/children'
+    | '/parent/forgot-password'
     | '/parent/login'
+    | '/parent/reset-password'
     | '/parent/'
     | '/faculty/portal/account'
     | '/faculty/portal/attendance'
@@ -474,16 +514,20 @@ export interface FileRouteTypes {
     | '/admin/faculty'
     | '/admin/faculty-accounts'
     | '/admin/fees'
+    | '/admin/forgot-password'
     | '/admin/gallery'
     | '/admin/guardians'
     | '/admin/import'
     | '/admin/login'
+    | '/admin/reset-password'
     | '/admin/settings'
     | '/admin/students'
     | '/admin/year-end'
     | '/parent/account'
     | '/parent/children'
+    | '/parent/forgot-password'
     | '/parent/login'
+    | '/parent/reset-password'
     | '/parent'
     | '/faculty/portal/account'
     | '/faculty/portal/attendance'
@@ -519,16 +563,20 @@ export interface FileRouteTypes {
     | '/admin/faculty'
     | '/admin/faculty-accounts'
     | '/admin/fees'
+    | '/admin/forgot-password'
     | '/admin/gallery'
     | '/admin/guardians'
     | '/admin/import'
     | '/admin/login'
+    | '/admin/reset-password'
     | '/admin/settings'
     | '/admin/students'
     | '/admin/year-end'
     | '/parent/account'
     | '/parent/children'
+    | '/parent/forgot-password'
     | '/parent/login'
+    | '/parent/reset-password'
     | '/parent/'
     | '/faculty/portal/account'
     | '/faculty/portal/attendance'
@@ -639,11 +687,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ParentIndexRouteImport
       parentRoute: typeof ParentRouteRoute
     }
+    '/parent/reset-password': {
+      id: '/parent/reset-password'
+      path: '/reset-password'
+      fullPath: '/parent/reset-password'
+      preLoaderRoute: typeof ParentResetPasswordRouteImport
+      parentRoute: typeof ParentRouteRoute
+    }
     '/parent/login': {
       id: '/parent/login'
       path: '/login'
       fullPath: '/parent/login'
       preLoaderRoute: typeof ParentLoginRouteImport
+      parentRoute: typeof ParentRouteRoute
+    }
+    '/parent/forgot-password': {
+      id: '/parent/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/parent/forgot-password'
+      preLoaderRoute: typeof ParentForgotPasswordRouteImport
       parentRoute: typeof ParentRouteRoute
     }
     '/parent/children': {
@@ -681,6 +743,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/reset-password': {
+      id: '/admin/reset-password'
+      path: '/reset-password'
+      fullPath: '/admin/reset-password'
+      preLoaderRoute: typeof AdminResetPasswordRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
@@ -707,6 +776,13 @@ declare module '@tanstack/react-router' {
       path: '/gallery'
       fullPath: '/admin/gallery'
       preLoaderRoute: typeof AdminGalleryRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/forgot-password': {
+      id: '/admin/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/admin/forgot-password'
+      preLoaderRoute: typeof AdminForgotPasswordRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/admin/fees': {
@@ -873,10 +949,12 @@ interface AdminRouteRouteChildren {
   AdminFacultyRoute: typeof AdminFacultyRoute
   AdminFacultyAccountsRoute: typeof AdminFacultyAccountsRoute
   AdminFeesRoute: typeof AdminFeesRoute
+  AdminForgotPasswordRoute: typeof AdminForgotPasswordRoute
   AdminGalleryRoute: typeof AdminGalleryRoute
   AdminGuardiansRoute: typeof AdminGuardiansRoute
   AdminImportRoute: typeof AdminImportRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminResetPasswordRoute: typeof AdminResetPasswordRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminStudentsRoute: typeof AdminStudentsRoute
   AdminYearEndRoute: typeof AdminYearEndRoute
@@ -896,10 +974,12 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminFacultyRoute: AdminFacultyRoute,
   AdminFacultyAccountsRoute: AdminFacultyAccountsRoute,
   AdminFeesRoute: AdminFeesRoute,
+  AdminForgotPasswordRoute: AdminForgotPasswordRoute,
   AdminGalleryRoute: AdminGalleryRoute,
   AdminGuardiansRoute: AdminGuardiansRoute,
   AdminImportRoute: AdminImportRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminResetPasswordRoute: AdminResetPasswordRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminStudentsRoute: AdminStudentsRoute,
   AdminYearEndRoute: AdminYearEndRoute,
@@ -957,14 +1037,18 @@ const ParentChildrenRouteWithChildren = ParentChildrenRoute._addFileChildren(
 interface ParentRouteRouteChildren {
   ParentAccountRoute: typeof ParentAccountRoute
   ParentChildrenRoute: typeof ParentChildrenRouteWithChildren
+  ParentForgotPasswordRoute: typeof ParentForgotPasswordRoute
   ParentLoginRoute: typeof ParentLoginRoute
+  ParentResetPasswordRoute: typeof ParentResetPasswordRoute
   ParentIndexRoute: typeof ParentIndexRoute
 }
 
 const ParentRouteRouteChildren: ParentRouteRouteChildren = {
   ParentAccountRoute: ParentAccountRoute,
   ParentChildrenRoute: ParentChildrenRouteWithChildren,
+  ParentForgotPasswordRoute: ParentForgotPasswordRoute,
   ParentLoginRoute: ParentLoginRoute,
+  ParentResetPasswordRoute: ParentResetPasswordRoute,
   ParentIndexRoute: ParentIndexRoute,
 }
 

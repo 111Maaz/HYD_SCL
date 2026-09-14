@@ -26,8 +26,15 @@ port = 54323
 
 [auth]
 enabled = true
-site_url = "http://localhost:5173"
-additional_redirect_urls = ["http://localhost:5173/admin/login", "http://127.0.0.1:5173/admin/login"]
+site_url = "http://localhost:8080"
+additional_redirect_urls = [
+  "http://localhost:8080/admin/login",
+  "http://localhost:8080/admin/reset-password",
+  "http://localhost:8080/parent/reset-password",
+  "http://localhost:5173/admin/login",
+  "http://localhost:5173/admin/reset-password",
+  "http://localhost:5173/parent/reset-password",
+]
 jwt_expiry = 3600
 enable_signup = false
 

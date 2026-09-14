@@ -38,12 +38,14 @@ import {
 import {
   INCHARGE_ROLE_KEYS,
   STAFF_ROLE_LABELS,
+  isAboveVicePrincipalAuthority,
+  isInchargeRole,
   type StaffRoleKey,
 } from "@/types/staff-roles";
 import { getStaffDisplayName, isStaffPortalActive } from "@/types/database";
 
-function isInchargeKey(key: string | null | undefined): boolean {
-  return !!key && (INCHARGE_ROLE_KEYS as readonly string[]).includes(key);
+function isInchargeAccount(row: StaffAccountRow): boolean {
+  return isInchargeRole(row.staff_role_key) || isInchargeRole(row.also_incharge_role_key);
 }
 
 export function LeadershipConsole({ mode }: { mode: "principal" | "vice_principal" }) {
@@ -72,19 +74,14 @@ export function LeadershipConsole({ mode }: { mode: "principal" | "vice_principa
     [accounts],
   );
   const incharges = useMemo(
-    () =>
-      accounts.filter(
-        (a) => isInchargeKey(a.staff_role_key) || isInchargeKey(a.also_incharge_role_key),
-      ),
+    () => accounts.filter((a) => isInchargeAccount(a)),
     [accounts],
   );
   const otherStaff = useMemo(
     () =>
       accounts.filter(
         (a) =>
-          a.staff_role_key !== "PRINCIPAL" &&
-          a.staff_role_key !== "VICE_PRINCIPAL" &&
-          !isInchargeKey(a.staff_role_key),
+          !isAboveVicePrincipalAuthority(a.staff_role_key) && !isInchargeAccount(a),
       ),
     [accounts],
   );
@@ -183,7 +180,7 @@ export function LeadershipConsole({ mode }: { mode: "principal" | "vice_principa
   const description =
     mode === "principal"
       ? "Manage your Vice Principal grant, incharges, and staff from here."
-      : "Grant or revoke incharge access and assign roles from remaining staff.";
+      : "Grant or revoke incharge access. You cannot change the Principal or other Vice Principals.";
 
   return (
     <>
@@ -277,8 +274,7 @@ export function LeadershipConsole({ mode }: { mode: "principal" | "vice_principa
               Staff pool
             </CardTitle>
             <CardDescription>
-              Remaining staff — assign anyone as an incharge
-              {mode === "principal" ? " or manage access." : "."}
+              Remaining teachers and staff — assign as an incharge.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">

@@ -1,4 +1,5 @@
 import { LeadershipConsole } from "@/components/admin/LeadershipConsole";
+import { PrincipalCommandCentre } from "@/components/admin/PrincipalCommandCentre";
 import { useAuth } from "@/hooks/useAuth";
 
 export function AdminDashboard() {
@@ -6,5 +7,10 @@ export function AdminDashboard() {
   const mode =
     auth?.staffRoleKey === "VICE_PRINCIPAL" ? "vice_principal" : "principal";
 
-  return <LeadershipConsole mode={mode} />;
+  return (
+    <>
+      <PrincipalCommandCentre />
+      <LeadershipConsole mode={mode} />
+    </>
+  );
 }

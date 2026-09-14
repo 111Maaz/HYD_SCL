@@ -5,11 +5,11 @@ import {
   useRouterState,
 } from "@tanstack/react-router";
 
-import { requireAdminPath } from "@/lib/route-guards";
+import { isPublicAdminAuthPath, requireAdminPath } from "@/lib/route-guards";
 
 export const Route = createFileRoute("/admin")({
   beforeLoad: async ({ location }) => {
-    if (location.pathname === "/admin/login") {
+    if (isPublicAdminAuthPath(location.pathname)) {
       return;
     }
 
@@ -25,9 +25,7 @@ const LazyAdminShellLayout = lazyRouteComponent(
 
 function AdminLayout() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const isLogin = pathname === "/admin/login";
-
-  if (isLogin) {
+  if (isPublicAdminAuthPath(pathname)) {
     return <Outlet />;
   }
 
