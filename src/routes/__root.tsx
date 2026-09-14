@@ -17,6 +17,7 @@ import { Footer } from "@/components/site/Footer";
 import { WhatsAppButton } from "@/components/site/WhatsAppButton";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/useAuth";
+import { isPublicParentAuthPath } from "@/lib/route-guards";
 import { MotionProvider } from "@/components/site/MotionProvider";
 
 function NotFoundComponent() {
@@ -122,7 +123,10 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const isPortalRoute = pathname.startsWith("/admin") || pathname.startsWith("/faculty");
+  const isPortalRoute =
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/faculty") ||
+    (pathname.startsWith("/parent") && !isPublicParentAuthPath(pathname));
 
   return (
     <QueryClientProvider client={queryClient}>

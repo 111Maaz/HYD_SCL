@@ -24,6 +24,7 @@ import { Route as ParentIndexRouteImport } from './routes/parent/index'
 import { Route as ParentResetPasswordRouteImport } from './routes/parent/reset-password'
 import { Route as ParentLoginRouteImport } from './routes/parent/login'
 import { Route as ParentForgotPasswordRouteImport } from './routes/parent/forgot-password'
+import { Route as ParentCreateAccountRouteImport } from './routes/parent/create-account'
 import { Route as ParentChildrenRouteImport } from './routes/parent/children'
 import { Route as ParentAccountRouteImport } from './routes/parent/account'
 import { Route as AdminYearEndRouteImport } from './routes/admin/year-end'
@@ -130,6 +131,11 @@ const ParentLoginRoute = ParentLoginRouteImport.update({
 const ParentForgotPasswordRoute = ParentForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
+  getParentRoute: () => ParentRouteRoute,
+} as any)
+const ParentCreateAccountRoute = ParentCreateAccountRouteImport.update({
+  id: '/create-account',
+  path: '/create-account',
   getParentRoute: () => ParentRouteRoute,
 } as any)
 const ParentChildrenRoute = ParentChildrenRouteImport.update({
@@ -330,6 +336,7 @@ export interface FileRoutesByFullPath {
   '/admin/year-end': typeof AdminYearEndRoute
   '/parent/account': typeof ParentAccountRoute
   '/parent/children': typeof ParentChildrenRouteWithChildren
+  '/parent/create-account': typeof ParentCreateAccountRoute
   '/parent/forgot-password': typeof ParentForgotPasswordRoute
   '/parent/login': typeof ParentLoginRoute
   '/parent/reset-password': typeof ParentResetPasswordRoute
@@ -377,6 +384,7 @@ export interface FileRoutesByTo {
   '/admin/year-end': typeof AdminYearEndRoute
   '/parent/account': typeof ParentAccountRoute
   '/parent/children': typeof ParentChildrenRouteWithChildren
+  '/parent/create-account': typeof ParentCreateAccountRoute
   '/parent/forgot-password': typeof ParentForgotPasswordRoute
   '/parent/login': typeof ParentLoginRoute
   '/parent/reset-password': typeof ParentResetPasswordRoute
@@ -427,6 +435,7 @@ export interface FileRoutesById {
   '/admin/year-end': typeof AdminYearEndRoute
   '/parent/account': typeof ParentAccountRoute
   '/parent/children': typeof ParentChildrenRouteWithChildren
+  '/parent/create-account': typeof ParentCreateAccountRoute
   '/parent/forgot-password': typeof ParentForgotPasswordRoute
   '/parent/login': typeof ParentLoginRoute
   '/parent/reset-password': typeof ParentResetPasswordRoute
@@ -478,6 +487,7 @@ export interface FileRouteTypes {
     | '/admin/year-end'
     | '/parent/account'
     | '/parent/children'
+    | '/parent/create-account'
     | '/parent/forgot-password'
     | '/parent/login'
     | '/parent/reset-password'
@@ -525,6 +535,7 @@ export interface FileRouteTypes {
     | '/admin/year-end'
     | '/parent/account'
     | '/parent/children'
+    | '/parent/create-account'
     | '/parent/forgot-password'
     | '/parent/login'
     | '/parent/reset-password'
@@ -574,6 +585,7 @@ export interface FileRouteTypes {
     | '/admin/year-end'
     | '/parent/account'
     | '/parent/children'
+    | '/parent/create-account'
     | '/parent/forgot-password'
     | '/parent/login'
     | '/parent/reset-password'
@@ -706,6 +718,13 @@ declare module '@tanstack/react-router' {
       path: '/forgot-password'
       fullPath: '/parent/forgot-password'
       preLoaderRoute: typeof ParentForgotPasswordRouteImport
+      parentRoute: typeof ParentRouteRoute
+    }
+    '/parent/create-account': {
+      id: '/parent/create-account'
+      path: '/create-account'
+      fullPath: '/parent/create-account'
+      preLoaderRoute: typeof ParentCreateAccountRouteImport
       parentRoute: typeof ParentRouteRoute
     }
     '/parent/children': {
@@ -1037,6 +1056,7 @@ const ParentChildrenRouteWithChildren = ParentChildrenRoute._addFileChildren(
 interface ParentRouteRouteChildren {
   ParentAccountRoute: typeof ParentAccountRoute
   ParentChildrenRoute: typeof ParentChildrenRouteWithChildren
+  ParentCreateAccountRoute: typeof ParentCreateAccountRoute
   ParentForgotPasswordRoute: typeof ParentForgotPasswordRoute
   ParentLoginRoute: typeof ParentLoginRoute
   ParentResetPasswordRoute: typeof ParentResetPasswordRoute
@@ -1046,6 +1066,7 @@ interface ParentRouteRouteChildren {
 const ParentRouteRouteChildren: ParentRouteRouteChildren = {
   ParentAccountRoute: ParentAccountRoute,
   ParentChildrenRoute: ParentChildrenRouteWithChildren,
+  ParentCreateAccountRoute: ParentCreateAccountRoute,
   ParentForgotPasswordRoute: ParentForgotPasswordRoute,
   ParentLoginRoute: ParentLoginRoute,
   ParentResetPasswordRoute: ParentResetPasswordRoute,

@@ -67,7 +67,7 @@ export function PortalLoginForm({ portal }: PortalLoginFormProps) {
           <CardTitle className="text-2xl">{isParent ? "Parent Login" : "Staff Login"}</CardTitle>
           <CardDescription>
             {isParent
-              ? "Sign in with the email the school linked to your guardian record. You will only see children already linked to you."
+              ? "Sign in with your parent account. You will only see children the school has already linked to you."
               : "Sign in with your school staff email. Your ERP role decides which portal you land in."}
           </CardDescription>
         </CardHeader>
@@ -116,6 +116,18 @@ export function PortalLoginForm({ portal }: PortalLoginFormProps) {
                 "Login"
               )}
             </Button>
+
+            {isParent && (
+              <div className="border-t pt-5 text-center">
+                <p className="text-sm text-muted-foreground">New to the Parent Portal?</p>
+                <Link
+                  to="/parent/create-account"
+                  className="mt-2 inline-flex text-sm font-semibold text-primary hover:underline"
+                >
+                  Create Account
+                </Link>
+              </div>
+            )}
           </form>
         </CardContent>
       </Card>

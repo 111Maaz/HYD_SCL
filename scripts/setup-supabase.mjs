@@ -117,6 +117,7 @@ async function ensureUser(supabase, { email, password, role, label }) {
     const { error: updateError } = await supabase.auth.admin.updateUserById(existing.id, {
       password,
       user_metadata: { role },
+      app_metadata: { account_type: "staff" },
       email_confirm: true,
     });
 
@@ -133,6 +134,7 @@ async function ensureUser(supabase, { email, password, role, label }) {
     password,
     email_confirm: true,
     user_metadata: { role },
+    app_metadata: { account_type: "staff" },
   });
 
   if (error) {

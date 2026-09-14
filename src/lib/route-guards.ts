@@ -58,6 +58,7 @@ const PUBLIC_ADMIN_AUTH_PATHS = new Set([
 
 const PUBLIC_PARENT_AUTH_PATHS = new Set([
   "/parent/login",
+  "/parent/create-account",
   "/parent/forgot-password",
   "/parent/reset-password",
 ]);

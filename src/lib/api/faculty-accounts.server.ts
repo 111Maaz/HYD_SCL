@@ -336,6 +336,9 @@ export const createFacultyAccountFn = createServerFn({ method: "POST" })
         name: data.name,
         staff_role_key: pickPrimaryStaffRoleKey(roleKeys),
       },
+      app_metadata: {
+        account_type: "staff",
+      },
     });
 
     if (createError || !authData.user) {
