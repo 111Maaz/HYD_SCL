@@ -82,6 +82,52 @@ export async function fetchAttendanceRows(
     .sort((a, b) => (a.roll_number ?? 9999) - (b.roll_number ?? 9999));
 }
 
+/** Sections whose every active enrollment has an attendance record on the given date. */
+export async function fetchCompletedAttendanceSectionIds(
+  sectionIds: string[],
+  attendanceDate: string,
+): Promise<string[]> {
+  const uniqueSectionIds = [...new Set(sectionIds)];
+  if (uniqueSectionIds.length === 0) return [];
+
+  const client = requireSupabase();
+  const { data: enrollments, error: enrollmentError } = await client
+    .from("enrollments")
+    .select("id, section_id")
+    .eq("status", "ACTIVE")
+    .in("section_id", uniqueSectionIds);
+
+  if (enrollmentError) {
+    throw new Error(enrollmentError.message || "Failed to load attendance sections.");
+  }
+
+  const enrollmentRows = enrollments ?? [];
+  if (enrollmentRows.length === 0) return [];
+
+  const { data: records, error: recordsError } = await client
+    .from("attendance_records")
+    .select("enrollment_id")
+    .eq("attendance_date", attendanceDate)
+    .in("enrollment_id", enrollmentRows.map((row) => row.id));
+
+  if (recordsError) {
+    throw new Error(recordsError.message || "Failed to check today's attendance.");
+  }
+
+  const markedIds = new Set((records ?? []).map((row) => row.enrollment_id));
+  const sectionCounts = new Map<string, { total: number; marked: number }>();
+  for (const enrollment of enrollmentRows) {
+    const count = sectionCounts.get(enrollment.section_id) ?? { total: 0, marked: 0 };
+    count.total += 1;
+    if (markedIds.has(enrollment.id)) count.marked += 1;
+    sectionCounts.set(enrollment.section_id, count);
+  }
+
+  return [...sectionCounts]
+    .filter(([, count]) => count.total > 0 && count.total === count.marked)
+    .map(([sectionId]) => sectionId);
+}
+
 export type AttendanceSaveRow = {
   enrollment_id: string;
   status: AttendanceStatus;

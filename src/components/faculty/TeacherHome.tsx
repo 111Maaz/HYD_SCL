@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ClipboardCheck, Loader2, UserCheck, UserPlus } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -34,6 +34,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
+import { schoolTodayIso } from "@/lib/school-date";
+import { fetchCompletedAttendanceSectionIds } from "@/services/attendance";
 import {
   allotmentClassLabel,
   createSecondaryAllotment,
@@ -51,10 +53,21 @@ export function TeacherHome() {
   const { auth } = useAuth();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [today, setToday] = useState(schoolTodayIso);
   const [secondaryId, setSecondaryId] = useState("");
-  const [startsOn, setStartsOn] = useState(() => new Date().toISOString().slice(0, 10));
-  const [endsOn, setEndsOn] = useState(() => new Date().toISOString().slice(0, 10));
+  const [startsOn, setStartsOn] = useState(schoolTodayIso);
+  const [endsOn, setEndsOn] = useState(schoolTodayIso);
   const [notes, setNotes] = useState("");
+
+  useEffect(() => {
+    const updateDay = () => setToday(schoolTodayIso());
+    const timer = window.setInterval(updateDay, 15_000);
+    document.addEventListener("visibilitychange", updateDay);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", updateDay);
+    };
+  }, []);
 
   const {
     data: profile,
@@ -70,13 +83,13 @@ export function TeacherHome() {
   const staffId = profile?.id;
 
   const { data: coverForMe = [] } = useQuery({
-    queryKey: ["teacher", "secondary-cover", staffId],
+    queryKey: ["teacher", "secondary-cover", staffId, today],
     queryFn: () => fetchSecondaryCoverForMe(staffId!),
     enabled: !!staffId,
   });
 
   const { data: mySecondaries = [] } = useQuery({
-    queryKey: ["teacher", "my-secondaries", staffId],
+    queryKey: ["teacher", "my-secondaries", staffId, today],
     queryFn: () => fetchMySecondaryAllotments(staffId!),
     enabled: !!staffId,
   });
@@ -85,10 +98,17 @@ export function TeacherHome() {
     data: attendanceClasses = [],
     isLoading: classesLoading,
   } = useQuery({
-    queryKey: ["teacher", "attendance-classes", staffId],
+    queryKey: ["teacher", "attendance-classes", staffId, today],
     queryFn: () => fetchMyAttendanceAllotments(staffId!),
     enabled: !!staffId,
   });
+
+  const { data: completedSections = [], isFetching: completionChecking, isError: completionError } = useQuery({
+    queryKey: ["teacher", "attendance-completion", staffId, today, attendanceClasses.map((row) => row.section_id).join(",")],
+    queryFn: () => fetchCompletedAttendanceSectionIds(attendanceClasses.map((row) => row.section_id), today),
+    enabled: !!staffId && attendanceClasses.length > 0,
+  });
+  const completedSectionIds = new Set(completedSections);
 
   const { data: peers = [] } = useQuery({
     queryKey: ["teacher", "peers"],
@@ -139,7 +159,6 @@ export function TeacherHome() {
     );
   }
 
-  const today = new Date().toISOString().slice(0, 10);
   const activeSecondaries = mySecondaries.filter(
     (row) => row.active && row.starts_on <= today && row.ends_on >= today,
   );
@@ -235,6 +254,11 @@ export function TeacherHome() {
 
       <section className="mb-2">
         <PortalSectionTitle>Attendance classes allotted to you</PortalSectionTitle>
+        {completionError ? (
+          <p role="alert" className="mb-3 text-sm text-destructive">
+            Unable to check today's attendance status. Refresh the page to try again.
+          </p>
+        ) : null}
         {classesLoading ? (
           <AdminLoadingState label="Loading classes…" />
         ) : attendanceClasses.length === 0 ? (
@@ -266,8 +290,17 @@ export function TeacherHome() {
                     <Link
                       to="/faculty/portal/attendance"
                       search={{ sectionId: row.section_id, yearId: row.academic_year_id }}
+                      aria-disabled={completionChecking || completionError}
+                      tabIndex={completionChecking || completionError ? -1 : undefined}
+                      className={completionChecking || completionError ? "pointer-events-none opacity-50" : undefined}
                     >
-                      Take attendance
+                      {completionChecking
+                        ? "Checking…"
+                        : completionError
+                          ? "Status unavailable"
+                          : completedSectionIds.has(row.section_id)
+                            ? "Edit attendance"
+                            : "Take attendance"}
                     </Link>
                   </Button>
                 </li>

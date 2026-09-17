@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { Save } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -18,6 +19,7 @@ import {
   normalizeAttendanceMarkStatus,
   type AttendanceMarkStatus,
 } from "@/lib/attendance-ui";
+import { schoolTodayIso } from "@/lib/school-date";
 import {
   attendanceRowDisplayName,
   fetchAttendanceRows,
@@ -40,9 +42,8 @@ export function FacultyAttendanceView({
   yearId: string;
 }) {
   const queryClient = useQueryClient();
-  const [attendanceDate, setAttendanceDate] = useState(() =>
-    new Date().toISOString().slice(0, 10),
-  );
+  const navigate = useNavigate();
+  const [attendanceDate, setAttendanceDate] = useState(schoolTodayIso);
   const [drafts, setDrafts] = useState<Record<string, DraftRow>>({});
 
   const { data: dayEvent } = useQuery({
@@ -119,7 +120,9 @@ export function FacultyAttendanceView({
       void queryClient.invalidateQueries({
         queryKey: ["faculty", "attendance-rows", yearId, sectionId, attendanceDate],
       });
+      void queryClient.invalidateQueries({ queryKey: ["teacher", "attendance-completion"] });
       toast.success("Attendance saved.");
+      void navigate({ to: "/faculty/portal/home" });
     },
     onError: (err: Error) => toast.error(err.message),
   });

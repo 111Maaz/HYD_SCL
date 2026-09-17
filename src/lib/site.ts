@@ -2,6 +2,7 @@ import type { Person } from "@/components/site/PersonCard";
 
 export const SITE = {
   name: "Hyderabad School",
+  timeZone: "Asia/Kolkata",
   tagline: "Private educational institution rooted in academic excellence and Islamic values",
   phone: "+91-93906 97239",
   phones: ["+91-93906 97239", "+91-9347066804", "+91-8522000788"] as const,

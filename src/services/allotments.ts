@@ -1,4 +1,5 @@
 import { requireSupabase } from "@/services/supabase";
+import { schoolTodayIso } from "@/lib/school-date";
 import type {
   AttendanceTeacherAllotmentRow,
   SecondaryTeacherAllotment,
@@ -101,7 +102,7 @@ export async function fetchMyAttendanceAllotments(
   staffId: string,
 ): Promise<AttendanceTeacherAllotmentRow[]> {
   const client = requireSupabase();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = schoolTodayIso();
 
   const { data: asPrimary, error: primaryError } = await client
     .from("attendance_teacher_allotments")
@@ -203,7 +204,7 @@ export async function fetchSecondaryCoverForMe(
   staffId: string,
 ): Promise<SecondaryTeacherAllotmentRow[]> {
   const client = requireSupabase();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = schoolTodayIso();
   const { data, error } = await client
     .from("secondary_teacher_allotments")
     .select(
