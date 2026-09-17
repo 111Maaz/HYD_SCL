@@ -90,7 +90,7 @@ export function PrincipalCommandCentre() {
 function CommandCentreBody({ data }: { data: PrincipalCommandData }) {
   const yearLabel = data.activeYear?.name ?? "No active academic year";
   const attendanceHint = data.isAttendanceDay
-    ? "Working day"
+    ? `${data.attendanceToday.present + data.attendanceToday.absent} of ${data.students.activeEnrolled} marked · ${data.attendanceToday.percent == null ? "No present rate yet" : `${data.attendanceToday.percent}% present among marked`}`
     : "Holiday / school closure — attendance not expected";
 
   return (
@@ -135,8 +135,8 @@ function CommandCentreBody({ data }: { data: PrincipalCommandData }) {
           hint="Active enrollments this year"
         />
         <StatTile
-          value={data.attendanceToday.percent == null ? "—" : `${data.attendanceToday.percent}%`}
-          label="Today's attendance"
+          value={data.attendanceToday.markedPercent == null ? "—" : `${data.attendanceToday.markedPercent}%`}
+          label="Attendance marked today"
           hint={attendanceHint}
         />
         <StatTile

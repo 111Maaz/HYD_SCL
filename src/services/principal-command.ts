@@ -86,6 +86,7 @@ export type PrincipalCommandData = {
     present: number;
     absent: number;
     unmarked: number;
+    markedPercent: number | null;
     percent: number | null;
   };
   attendanceTrend: AttendanceTrendRow[];
@@ -193,7 +194,7 @@ export async function fetchPrincipalCommandData(): Promise<PrincipalCommandData>
         newThisYear: 0,
         continuingThisYear: 0,
       },
-      attendanceToday: { present: 0, absent: 0, unmarked: 0, percent: null },
+      attendanceToday: { present: 0, absent: 0, unmarked: 0, markedPercent: null, percent: null },
       attendanceTrend: [],
       unmarkedSections: [],
       lowAttendanceSections: [],
@@ -399,6 +400,9 @@ export async function fetchPrincipalCommandData(): Promise<PrincipalCommandData>
   const absent = sectionRows.reduce((sum, row) => sum + row.absent, 0);
   const unmarked = sectionRows.reduce((sum, row) => sum + row.unmarked, 0);
   const markedToday = present + absent;
+  const markedPercent = isAttendanceDay && enrollments.length > 0
+    ? Math.round((markedToday / enrollments.length) * 1000) / 10
+    : null;
   const percent = markedToday > 0 ? Math.round((present / markedToday) * 1000) / 10 : null;
 
   const unmarkedSections = isAttendanceDay
@@ -578,7 +582,7 @@ export async function fetchPrincipalCommandData(): Promise<PrincipalCommandData>
       newThisYear,
       continuingThisYear,
     },
-    attendanceToday: { present, absent, unmarked, percent },
+    attendanceToday: { present, absent, unmarked, markedPercent, percent },
     attendanceTrend,
     unmarkedSections,
     lowAttendanceSections,

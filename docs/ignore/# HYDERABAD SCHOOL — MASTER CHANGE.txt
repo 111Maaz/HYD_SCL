@@ -1,0 +1,1927 @@
+# HYDERABAD SCHOOL — MASTER CHANGE CHECKLIST
+
+## How to read this
+
+* ✅ = already implemented; **do not redo**
+* 🔴 = important change still required
+* 🟠 = should be done
+* 🟡 = later / after core system
+* ⏸️ = intentionally deferred
+* ❌ = explicitly do not do
+
+---
+
+# PART 1 — ORIGINAL PUBLIC WEBSITE CLEANUP
+
+These were the earliest website-level changes.
+
+## 1. Remove fake/placeholder school information
+
+🔴 **Final cleanup required**
+
+Check the entire public website for:
+
+* fake names
+* fake phone numbers
+* fake email addresses
+* fake addresses
+* fake statistics
+* fake faculty names
+* fake leadership information
+* placeholder campus information
+* placeholder dates
+
+The original blueprint explicitly required fake information to be removed rather than shipped. 
+
+### Final rule
+
+Anything that represents an actual school fact must either:
+
+* contain verified Hyderabad School information, or
+* be removed/hidden until management supplies it.
+
+---
+
+# 2. Public `/students` page / class-materials section
+
+This needs special clarification because the **original plan and later architecture are different**.
+
+Originally, `/students` was deliberately created as a public class-material browser:
+
+```text
+/students
+    ↓
+Class 1–10
+    ↓
+class materials
+    ↓
+Preview / Download
+```
+
+The original blueprint explicitly planned this as a public Phase-1 feature. 
+
+But the current ERP architecture recognizes that this is not the right long-term learning-resource model: `class_materials` is still public-read today, while authenticated learning resources are a future separation. 
+
+### Our current direction
+
+🔴 **Remove/deactivate the public student/materials experience from the public website.**
+
+That means:
+
+* remove **Students** from public navbar
+* remove public `/students` page from normal navigation
+* do not expose class materials publicly
+* remove public preview/download access
+* keep the underlying material capability available for the ERP/staff workflow
+* do **not** delete the database table yet
+* do **not** delete existing test material data
+
+### Database/security side
+
+Later, once the replacement learning-resource model is established:
+
+```text
+public class materials
+        ↓
+authenticated school resources
+```
+
+The public-read RLS should be removed.
+
+**Important:** don't drop `class_materials` simply because `/students` disappears. The table still supports the current staff/material workflow.
+
+---
+
+# 3. Public faculty presentation
+
+Originally there were two faculty concepts:
+
+```text
+faculty_members
+faculty_profiles
+```
+
+That architecture has now been consolidated.
+
+### Final direction
+
+✅ Already migrated to:
+
+```text
+staff_profiles
+```
+
+and the public directory now reads from it. 
+
+### Still required
+
+🟠 Verify:
+
+* public faculty only shows `is_public = true`
+* inactive staff aren't publicly shown
+* staff without public listing remain internal
+* photo handling works
+* ordering works
+
+Do **not** recreate `faculty_members` or `faculty_profiles`.
+
+---
+
+# 4. Academics page
+
+🟠 Keep the faculty section on the Academics page.
+
+The original design decision was:
+
+> no separate public `/faculty` page.
+
+Faculty appearance stays on Academics. 
+
+So:
+
+```text
+/academics
+   ├── academic information
+   └── faculty
+```
+
+No new `/faculty` public route.
+
+---
+
+# 5. Homepage
+
+The planned homepage improvements were:
+
+* Hero
+* Statistics
+* Why Parents Choose
+* Principal Message
+* Campus Structure
+* Student Development
+* Faculty Preview
+* Admissions CTA
+
+
+
+### Status
+
+Most of this was already implemented during the website phase.
+
+🟠 Final pass only:
+
+* remove fake statistics
+* replace placeholder leadership
+* replace placeholder campus imagery
+* verify mobile layout
+* verify all CTA links
+
+---
+
+# 6. Scroll-progress indicator
+
+The planned behavior was:
+
+* desktop only
+* fixed right side
+* one segment per major section
+* active segment highlighted
+* completely hidden on mobile
+
+
+
+### Status
+
+✅ Already implemented/planned component exists.
+
+🟠 Final QA only.
+
+---
+
+# 7. About page
+
+Planned:
+
+* mission
+* vision
+* history
+* leadership
+* timeline
+
+Timeline dates were intentionally placeholders until management provides real dates. 
+
+### Final
+
+🟠 Replace any remaining placeholders with verified school information.
+
+---
+
+# 8. Islamic Education page
+
+Planned redesign:
+
+* Bismillah
+* Faith in Practice
+* Quran
+* Salah
+* Akhlaq
+* Ilm
+* Daily Duas
+* Respect
+* Character Building
+* Quran ayah
+* Islamic geometric background
+
+
+
+### Status
+
+✅ Implemented.
+
+🟠 Final content review only.
+
+---
+
+# 9. Contact page
+
+Originally the contact form was only `console.log`.
+
+That was later fixed.
+
+### Status
+
+✅ `contact_enquiries` implemented and wired.
+
+Current progress report explicitly confirms the contact form is now wired. 
+
+### Remaining
+
+🟠 Verify:
+
+* submission
+* validation
+* admin visibility
+* status handling
+* RLS
+* spam/basic abuse protection
+
+---
+
+# 10. Admissions
+
+Current flow:
+
+```text
+Public Admissions
+       ↓
+admission_enquiries
+       ↓
+Admin
+       ↓
+review
+       ↓
+conversion
+       ↓
+Student
+```
+
+### Status
+
+✅ Admissions enquiry + conversion implemented. 
+
+### Remaining
+
+🟠 Final workflow testing.
+
+---
+
+# PART 2 — ERP FOUNDATION
+
+These are already implemented and should **not be redesigned**.
+
+# 11. Academic years
+
+```text
+academic_years
+```
+
+Supports:
+
+* Planning
+* Active
+* Closed
+* Archived
+
+### Status
+
+✅ Complete.
+
+---
+
+# 12. Classes
+
+```text
+classes
+```
+
+Permanent class master:
+
+```text
+Class 1
+Class 2
+...
+Class 10
+```
+
+### Status
+
+✅ Complete.
+
+---
+
+# 13. Class-years
+
+```text
+class_years
+```
+
+Correct separation:
+
+```text
+Class 5
++
+2026–27
+=
+Class 5 / 2026–27
+```
+
+### Status
+
+✅ Complete.
+
+---
+
+# 14. Sections
+
+```text
+sections
+```
+
+Supports:
+
+* A/B/C/D
+* capacity
+* display order
+* active/inactive
+
+### Status
+
+✅ Complete.
+
+---
+
+# 15. Permanent Student ID
+
+Keep:
+
+```text
+HS-YYYY-NNNNN
+```
+
+### Rule
+
+🔴 **Never change this architecture.**
+
+Promotion must never create a new student.
+
+```text
+Student
+   ↓
+Enrollment 2026–27
+   ↓
+Enrollment 2027–28
+```
+
+This is explicitly an architecture guardrail. 
+
+---
+
+# 16. Enrollment
+
+Keep:
+
+```text
+student
++
+academic year
++
+class
++
+section
++
+roll number
+```
+
+### Rule
+
+🔴 Roll number is **not identity**.
+
+Already implemented correctly. 
+
+---
+
+# PART 3 — STAFF / AUTH / RBAC
+
+# 17. Remove old `public.users` architecture
+
+This was one of the biggest migrations.
+
+Old:
+
+```text
+users
+faculty_members
+faculty_profiles
+```
+
+was consolidated into:
+
+```text
+auth.users
+      ↓
+staff_profiles
+      ↓
+staff_roles
+```
+
+### Status
+
+✅ Already done.
+
+The history explicitly drops the old three tables. 
+
+### Do NOT
+
+❌ recreate `public.users`.
+
+---
+
+# 18. Staff profile system
+
+Current:
+
+```text
+staff_profiles
+```
+
+### Status
+
+✅ Implemented.
+
+### Remaining
+
+🟠 Finalize staff-management UX:
+
+* employee information
+* designation
+* status
+* contact
+* photo
+* login account
+* roles
+* assignments
+
+---
+
+# 19. RBAC
+
+Current roles:
+
+1. Principal
+2. Vice Principal
+3. Academic Incharge
+4. Attendance Incharge
+5. Fees Incharge
+6. Operations Incharge
+7. Teacher
+8. Staff
+
+### Status
+
+✅ Implemented.
+
+---
+
+# 20. Role/permission model
+
+Keep:
+
+```text
+roles
+permissions
+role_permissions
+staff_roles
+staff_scopes
+```
+
+### Status
+
+✅ Implemented.
+
+### Important future change
+
+🟠 Gradually move sensitive authorization away from broad:
+
+```text
+is_admin()
+```
+
+toward:
+
+```text
+user_has_permission(...)
+```
+
+where appropriate.
+
+The current architecture already recognizes that DB authorization is still broader in some areas. 
+
+---
+
+# 21. Shared login
+
+Current intended model:
+
+```text
+/admin/login
+      ↓
+email + password
+      ↓
+database role detection
+      ↓
+correct portal
+```
+
+### Important
+
+❌ No manual role-selection radio button anymore.
+
+The current implementation explicitly uses role-aware login without a manual role radio. 
+
+### Status
+
+✅ Implemented.
+
+---
+
+# 22. Fix Auth probing
+
+The login-page loading issue caused by fragile session checking was fixed by changing the auth probe to `getUser()`.
+
+### Status
+
+✅ Done.
+
+
+
+---
+
+# 23. Principal account chain
+
+Must verify:
+
+```text
+auth.users
+      ↓
+staff_profiles
+      ↓
+staff_roles
+      ↓
+PRINCIPAL
+```
+
+for the Principal account.
+
+### Status
+
+🟠 **Verification still required before declaring it completely clean.**
+
+The final history contains the repair query specifically linking the Principal Auth account and granting PRINCIPAL. 
+
+---
+
+# PART 4 — ROLE PORTALS
+
+# 24. Principal / VP leadership console
+
+Current:
+
+```text
+LeadershipConsole
+```
+
+handles:
+
+* VP assignment
+* incharge assignment
+* staff grants/revocation
+* staff account relationships
+
+### Status
+
+✅ Implemented.
+
+
+
+---
+
+# 25. Principal operational dashboard
+
+We intentionally rejected:
+
+```text
+40-chart analytics dashboard
+```
+
+Instead:
+
+```text
+Leadership
++
+Today
+```
+
+should eventually show useful operational cards:
+
+* today's present/absent
+* admissions
+* fees
+* important actions
+* operational alerts
+
+The progress report explicitly calls for this blend. 
+
+### Status
+
+🟠 **Still needs final operational dashboard layer.**
+
+Not a giant analytics dashboard.
+
+---
+
+# 26. Academic Incharge
+
+Current responsibility:
+
+* academic structure
+* students
+* guardians
+* year-end
+
+### Status
+
+✅ Portal implemented.
+
+---
+
+# 27. Attendance Incharge
+
+Current:
+
+```text
+Class
+ ↓
+Section
+ ↓
+Teacher
+```
+
+### Status
+
+✅ Allotment UI implemented.
+
+---
+
+# 28. Fees Incharge
+
+Current:
+
+```text
+Fees hub
+```
+
+### Status
+
+✅ Implemented.
+
+### Remaining
+
+🟠 Harden financial correction/refund/adjustment handling before real money volume.
+
+The existing model already uses soft cancellation rather than silently editing payments. 
+
+---
+
+# 29. Operations Incharge
+
+Current:
+
+* calendar
+* gallery
+* contact
+
+### Status
+
+✅ Implemented.
+
+---
+
+# 30. Teacher portal
+
+Current:
+
+```text
+/faculty/portal/home
+```
+
+with:
+
+* allotted classes
+* secondary cover
+* attendance
+* account centre
+
+### Status
+
+✅ Implemented.
+
+---
+
+# 31. Teacher + Incharge dual role
+
+A teacher may also be an incharge.
+
+### Status
+
+✅ Supported.
+
+The system uses effective role navigation rather than creating duplicate accounts. 
+
+---
+
+# PART 5 — ATTENDANCE
+
+# 32. Attendance ownership
+
+Keep:
+
+```text
+attendance_teacher_allotments
+```
+
+as the authoritative assignment.
+
+### Status
+
+✅ Implemented.
+
+---
+
+# 33. Secondary/substitute teacher
+
+Keep:
+
+```text
+secondary_teacher_allotments
+```
+
+with:
+
+* primary teacher
+* substitute teacher
+* start date
+* end date
+* active flag
+
+### Status
+
+✅ Implemented.
+
+---
+
+# 34. Attendance RLS
+
+This is **critical**.
+
+The database must enforce:
+
+```text
+Teacher
+  ↓
+only allotted section
+```
+
+not merely the UI.
+
+### Status
+
+✅ Sprint P implementation exists.
+
+But:
+
+🔴 **Run the complete security test suite and verify it.**
+
+Required tests include:
+
+1. allotted teacher CAN mark
+2. non-allotted teacher CANNOT mark
+3. secondary cover CAN mark during cover
+4. secondary cover CANNOT mark after cover
+5. disabled staff CANNOT write
+6. Principal/admin override works
+
+These are explicitly defined in the current plan. 
+
+---
+
+# 35. Historical attendance attribution
+
+Critical rule:
+
+If Teacher A marked attendance and is later removed from the section:
+
+```text
+Teacher A
+   ↓
+historical attendance
+```
+
+must remain attributed to Teacher A.
+
+Do **not** rewrite historical records to the new teacher.
+
+This is explicitly required by the architecture. 
+
+---
+
+# 36. Attendance working-day logic
+
+🟠 Final verification should cover:
+
+* working day
+* holiday
+* special working day
+* exam
+* school closure
+* attendance percentage
+
+The calendar enum already supports these concepts. 
+
+---
+
+# PART 6 — FEES
+
+# 37. Fee structures
+
+✅ Complete.
+
+---
+
+# 38. Student charges
+
+✅ Complete.
+
+---
+
+# 39. Payments
+
+✅ Complete.
+
+---
+
+# 40. Receipt history
+
+🟠 Parent portal now has payment history after Sprint R, but final verification of receipt behavior remains.
+
+---
+
+# 41. Correction-safe financial history
+
+🔴 Before production:
+
+Do not allow:
+
+```text
+Old payment ₹10,000
+        ↓
+silently edit to ₹8,000
+```
+
+Use:
+
+```text
+original transaction
+      ↓
+cancel / adjustment / refund
+      ↓
+new transaction
+```
+
+The current model already uses soft cancellation, but the full adjustment/refund model still needs hardening. 
+
+---
+
+# PART 7 — PARENT PORTAL
+
+# 42. Guardian model
+
+Keep:
+
+```text
+Guardian
+   ↕
+student_guardians
+   ↕
+Student
+```
+
+### Status
+
+✅ Complete.
+
+---
+
+# 43. Multiple children
+
+One parent account can access multiple linked children.
+
+### Status
+
+✅ Architecture supports it.
+
+---
+
+# 44. Parent student visibility
+
+Critical:
+
+```text
+Parent
+ ↓
+only linked children
+```
+
+### Status
+
+✅ RLS implemented.
+
+Parents cannot discover arbitrary students. 
+
+---
+
+# 45. Parent child detail
+
+Current:
+
+* attendance
+* fee information
+* enrollment
+* payments
+
+### Status
+
+✅ Sprint R complete.
+
+
+
+---
+
+# 46. Parent account centre
+
+Current:
+
+* profile
+* self-update
+
+### Status
+
+✅ Implemented.
+
+---
+
+# PART 8 — IMPORT CENTRE
+
+# 47. Import Centre v2
+
+Current architecture:
+
+```text
+CSV
+ ↓
+Import Centre
+ ↓
+validate
+ ↓
+dedupe
+ ↓
+match
+ ↓
+enrollment
+ ↓
+ERP
+```
+
+### Status
+
+✅ Sprint O complete.
+
+Supports:
+
+* guardian dedupe
+* existing student matching
+* enrollment
+* GUARDIAN_LINK
+* idempotent skip
+
+
+
+---
+
+# 48. Import idempotency testing
+
+🔴 **Must be tested thoroughly.**
+
+Same CSV uploaded twice must not create:
+
+```text
+duplicate student
+duplicate guardian
+duplicate enrollment
+duplicate relationship
+```
+
+Architecture explicitly requires imports to be idempotent and auditable. 
+
+---
+
+# 49. Import audit
+
+🟠 Verify:
+
+```text
+import_jobs
+import_rows
+audit_logs
+```
+
+properly record what happened.
+
+---
+
+# PART 9 — YEAR-END
+
+# 50. Promotion
+
+Current:
+
+```text
+Class 5 / 2026–27
+       ↓
+Class 6 / 2027–28
+```
+
+without creating a new student.
+
+### Status
+
+✅ Sprint Q implemented.
+
+---
+
+# 51. Section mapping
+
+🟠 Verify real-world cases:
+
+```text
+5-A → 6-B
+5-B → 6-A
+```
+
+etc.
+
+---
+
+# 52. Repeat
+
+Must support:
+
+```text
+Class 5 / 2026–27
+       ↓
+Class 5 / 2027–28
+```
+
+with same permanent Student ID.
+
+---
+
+# 53. Close academic year
+
+✅ Implemented.
+
+### Final QA
+
+🟠 Test entire year-end transaction as a batch.
+
+---
+
+# 54. Transfer / TC
+
+🔴 Still missing as a formal workflow.
+
+Need eventually:
+
+```text
+Transfer request
+ ↓
+academic verification
+ ↓
+fee clearance
+ ↓
+document generation
+ ↓
+TC
+ ↓
+student status = TRANSFERRED
+```
+
+The current year-end system only has basic completion/promotion/repeat. 
+
+---
+
+# PART 10 — RLS / SECURITY
+
+# 55. RLS recursion audit
+
+Because you already experienced **two recursion incidents**, this deserves its own complete audit.
+
+### Already fixed
+
+* `staff_profiles`
+* role lookup/login
+* parent helper patterns
+
+### Still required
+
+🔴 Audit every sensitive table for:
+
+* self-referencing RLS
+* recursive helper calls
+* overly broad policies
+* missing `WITH CHECK`
+* incorrect role assumptions
+
+The progress report explicitly calls for this because the earlier recursion bugs demonstrated that manual checking was insufficient. 
+
+---
+
+# 56. Automated RLS regression suite
+
+Current scaffold exists.
+
+### Required
+
+🔴 Expand after the basic attendance tests to roughly:
+
+```text
+15–20 security cases
+```
+
+Eventually covering:
+
+* Principal
+* VP
+* Incharges
+* Teachers
+* Parent
+* inactive staff
+* unauthorized users
+
+---
+
+# 57. Service-role usage audit
+
+Rule:
+
+```text
+service role
+     ↓
+only genuinely privileged server operations
+```
+
+Normal CRUD should use normal Supabase client + RLS.
+
+This is an explicit architecture guardrail. 
+
+### Status
+
+✅ Current staff account provisioning follows this direction.
+
+🟠 Final audit.
+
+---
+
+# PART 11 — MIGRATION / DATABASE TRUTH
+
+This is currently the **highest-priority technical task**.
+
+# 58. Capture the ERP foundation as a migration
+
+The live database was partially created from a manually applied consolidated ERP SQL script.
+
+That means the repo migration history did not initially fully describe the live database.
+
+### Required
+
+🔴 Ensure:
+
+```text
+20260701000000_erp_foundation.sql
+```
+
+contains the ERP foundation.
+
+This was already captured in the repository, but the verification must be completed. 
+
+---
+
+# 59. Schema coverage
+
+Run:
+
+```text
+npm run schema:coverage
+```
+
+to verify which tables are actually represented by migrations.
+
+---
+
+# 60. Live schema snapshot
+
+Run:
+
+```text
+npm run schema:dump:live
+```
+
+---
+
+# 61. Fresh database replay
+
+Create a completely fresh Supabase database.
+
+Apply:
+
+```text
+migrations only
+```
+
+No manual SQL.
+
+---
+
+# 62. Fresh schema snapshot
+
+Run:
+
+```text
+npm run schema:dump:fresh
+```
+
+---
+
+# 63. Schema comparison
+
+Run:
+
+```text
+npm run schema:compare
+```
+
+### Goal
+
+```text
+LIVE DATABASE
+      ≡
+MIGRATIONS-ONLY DATABASE
+```
+
+with:
+
+```text
+0 unexpected differences
+```
+
+This is explicitly the definition of completion for the baseline. 
+
+---
+
+# 64. New permanent database rule
+
+🔴 From this point forward:
+
+**Never manually change Supabase schema without immediately creating the corresponding migration.**
+
+This is now a permanent project rule. 
+
+---
+
+# PART 12 — DOCUMENTATION CLEANUP
+
+# 65. Archive old website blueprint
+
+The June website blueprint still describes:
+
+```text
+users
+faculty_members
+faculty_profiles
+```
+
+which are no longer the current architecture.
+
+### Action
+
+🟠 Archive/mark it historical.
+
+Do not let AI builders use it as current architecture.
+
+---
+
+# 66. Archive old audit report
+
+Same reason.
+
+### Action
+
+🟠 Clearly mark:
+
+> HISTORICAL — DO NOT USE FOR IMPLEMENTATION
+
+The current progress report explicitly calls for this. 
+
+---
+
+# 67. Keep three authoritative documents
+
+Going forward:
+
+```text
+1. SCHOOL MANAGEMENT PLATFORM
+   ↓
+architecture truth
+
+2. PLATFORM_IMPLEMENTATION_PLAN
+   ↓
+roadmap
+
+3. PLATFORM_PROGRESS_REPORT
+   ↓
+actual implementation truth
+```
+
+That hierarchy is already established. 
+
+---
+
+# PART 13 — SUBJECT MASTER
+
+# 68. Create Subject Master
+
+🟠 Before Examinations/Timetable.
+
+Current materials can use free-text subjects, but the future ERP needs a canonical subject entity.
+
+Eventually:
+
+```text
+subjects
+ ├── Mathematics
+ ├── English
+ ├── Science
+ ├── Urdu
+ ├── Quran
+ └── ...
+```
+
+The current report explicitly identifies this as a real gap. 
+
+---
+
+# PART 14 — NEXT MAJOR MODULES
+
+These are **not to start yet**.
+
+The locked order is:
+
+```text
+Baseline
+   ↓
+RLS tests
+   ↓
+O
+   ↓
+test
+   ↓
+P
+   ↓
+security tests
+   ↓
+Q
+   ↓
+R
+   ↓
+architecture reassessment
+   ↓
+Exams
+   ↓
+Timetable
+   ↓
+Communication
+```
+
+
+
+---
+
+# 69. Examinations
+
+🟡 Next major module.
+
+Will eventually include:
+
+* exams
+* subjects
+* assessments
+* marks
+* grades
+* report cards
+* result publication
+* historical results
+
+This is the largest remaining academic gap. 
+
+---
+
+# 70. Timetable
+
+🟡 After/alongside examination foundation.
+
+Will connect:
+
+```text
+teacher
++
+subject
++
+section
++
+period
++
+room
+```
+
+and eventually support attendance/substitution relationships.
+
+---
+
+# 71. Communication Centre
+
+🟡 After parent portal stabilization.
+
+One central system rather than every module independently implementing WhatsApp/SMS/push.
+
+---
+
+# 72. Student Documents
+
+🟡 Later.
+
+Examples:
+
+* birth certificate
+* ID documents
+* admission documents
+* certificates
+* academic documents
+* transfer documents
+
+---
+
+# 73. Formal TC / Transfer
+
+🟡 Later.
+
+Separate from simple year-end completion.
+
+---
+
+# PART 15 — THINGS WE ARE DELIBERATELY NOT DOING
+
+These are important because otherwise future AI coding can accidentally introduce them.
+
+## ❌ Do not rewrite the schema to imitate:
+
+* Fedena
+* MyClassBoard
+* Entab
+* another commercial ERP
+
+Your schema is intentionally your own architecture. 
+
+## ❌ Do not delete CMS tables yet
+
+Even though we're removing/deactivating the **public student/materials page**, we are **not deleting the underlying CMS tables immediately**.
+
+The current architecture explicitly says CMS should not be dropped before ERP replacement is complete. 
+
+## ❌ Do not let parents create students
+
+School creates/links the student.
+
+## ❌ Do not let parents search arbitrary students
+
+Parent sees linked children only.
+
+## ❌ Do not use service role for normal CRUD
+
+## ❌ Do not create a giant 100-module sidebar
+
+## ❌ Do not start cosmetic redesign before security/data correctness
+
+---
+
+# PART 16 — DEFERRED FEATURES
+
+These are intentionally parked.
+
+### ⏸️ Offline attendance sync
+
+Future.
+
+### ⏸️ SMS OTP
+
+Future.
+
+### ⏸️ Library
+
+Future.
+
+### ⏸️ Transport
+
+Future.
+
+### ⏸️ Payroll
+
+Future.
+
+### ⏸️ AI features
+
+Not a priority.
+
+### ⏸️ Blockchain
+
+No.
+
+### ⏸️ QR gimmicks
+
+No.
+
+### ⏸️ Microservices
+
+No.
+
+### ⏸️ Fancy analytics
+
+No.
+
+### ⏸️ Mobile app
+
+Later, after parent web stabilizes.
+
+The current roadmap explicitly lists these as deferred. 
+
+---
+
+# PART 17 — TEST DATA
+
+As you specifically requested:
+
+## 🟢 KEEP ALL DEVELOPMENT/DEMO DATA FOR NOW
+
+Do **NOT** delete:
+
+* 215 development students
+* teacher accounts
+* VP account
+* incharge accounts
+* test guardians
+* test relationships
+* test attendance/fee data if present
+
+The test data is useful for:
+
+```text
+Principal demo
+      ↓
+VP
+      ↓
+Incharge
+      ↓
+Teacher
+      ↓
+Attendance
+      ↓
+Parent
+      ↓
+Import
+      ↓
+Year-end
+```
+
+The existing project already defines this as the E2E demonstration chain. 
+
+### Only remove test data at final school handover.
+
+---
+
+# THE ACTUAL EXECUTION ORDER I RECOMMEND NOW
+
+Don't work through the above list from 1→73 blindly. A lot of those things are already done.
+
+Your **actual remaining work order** should be:
+
+### STEP 1 — Public website cleanup
+
+🔴
+
+1. Remove/deactivate public **Students / Class Materials** page.
+2. Remove Students from navbar/footer.
+3. Ensure no public route exposes materials.
+4. Keep `class_materials` table.
+5. Later remove its public-read RLS.
+6. Check remaining placeholder/fake school information.
+7. Verify public faculty directory.
+8. Verify contact/admission forms.
+
+---
+
+### STEP 2 — Migration truth
+
+🔴 **Most important technical step**
+
+```text
+schema:coverage
+      ↓
+live dump
+      ↓
+foundation migration
+      ↓
+fresh DB
+      ↓
+fresh dump
+      ↓
+schema compare
+      ↓
+0 differences
+```
+
+---
+
+### STEP 3 — RLS security
+
+🔴
+
+Run the attendance security tests:
+
+```text
+1. allotted teacher → YES
+2. wrong section → NO
+3. active substitute → YES
+4. expired substitute → NO
+5. disabled staff → NO
+6. Principal → YES
+```
+
+Then expand the security suite.
+
+---
+
+### STEP 4 — Finalize attendance
+
+🟠
+
+Verify:
+
+* allotment
+* secondary cover
+* date boundaries
+* correction
+* historical attribution
+* working-day rules
+* attendance percentages
+
+---
+
+### STEP 5 — Financial hardening
+
+🟠
+
+Verify:
+
+* charges
+* payments
+* receipts
+* cancellation
+* adjustment
+* correction
+* audit trail
+
+---
+
+### STEP 6 — Parent E2E
+
+🟠
+
+Test:
+
+```text
+Guardian login
+ ↓
+Child 1
+ ↓
+Child 2
+ ↓
+attendance
+ ↓
+fees
+ ↓
+payments
+ ↓
+profile
+```
+
+---
+
+### STEP 7 — Import E2E
+
+🟠
+
+Test:
+
+```text
+CSV #1
+ ↓
+import
+
+same CSV again
+ ↓
+NO DUPLICATES
+```
+
+Then test:
+
+* existing student
+* new student
+* existing guardian
+* new guardian
+* multiple children
+* guardian linking
+* enrollment
+
+---
+
+### STEP 8 — Year-end E2E
+
+🟠
+
+Test:
+
+```text
+Promote
+Repeat
+Transfer/complete
+Section mapping
+Close year
+```
+
+without changing permanent Student IDs.
+
+---
+
+### STEP 9 — Principal operational experience
+
+🟠
+
+Improve:
+
+```text
+LeadershipConsole
++
+Today operational overview
+```
+
+rather than building a giant analytics dashboard.
+
+---
+
+### STEP 10 — Documentation cleanup
+
+🟠
+
+Archive stale:
+
+* June website blueprint
+* June audit
+* old schema snapshots
+
+Keep only the current architecture + implementation plan + progress report as authoritative.
+
+---
+
+### STEP 11 — Subject Master
+
+🟡
+
+Before Exams/Timetable.
+
+---
+
+### STEP 12 — Architecture reassessment
+
+🟡
+
+Only after the above is genuinely stable.
+
+Then:
+
+```text
+Exams
+ ↓
+Timetable
+ ↓
+Communication
+ ↓
+Documents
+ ↓
+TC/Transfer
+```
+
+---
+
+# FINAL STATUS IN ONE VIEW
+
+| Area                           | Status                             |
+| ------------------------------ | ---------------------------------- |
+| Public website foundation      | ✅                                  |
+| Public Students/Materials page | 🔴 **Remove/deactivate**           |
+| CMS                            | ✅ Keep temporarily                 |
+| Academic years                 | ✅                                  |
+| Classes                        | ✅                                  |
+| Sections                       | ✅                                  |
+| Students                       | ✅                                  |
+| Enrollments                    | ✅                                  |
+| Staff architecture             | ✅                                  |
+| Legacy users/faculty tables    | ✅ Removed                          |
+| RBAC                           | ✅                                  |
+| Shared role-aware login        | ✅                                  |
+| Principal chain                | 🟠 Verify                          |
+| Role portals                   | ✅                                  |
+| Attendance allotment           | ✅                                  |
+| Secondary cover                | ✅                                  |
+| Attendance RLS                 | ✅ Implemented / 🔴 test thoroughly |
+| Parent portal                  | ✅                                  |
+| Import v2                      | ✅                                  |
+| Year-end v2                    | ✅                                  |
+| Fees                           | ✅ / 🟠 harden corrections          |
+| Migration truth                | 🔴 **Critical**                    |
+| RLS regression suite           | 🟠 Expand/test                     |
+| Placeholder content            | 🟠 Final cleanup                   |
+| Documentation truth            | 🟠 Archive stale docs              |
+| Subject master                 | 🟡                                 |
+| Exams                          | 🟡                                 |
+| Timetable                      | 🟡                                 |
+| Communication                  | 🟡                                 |
+| Documents                      | 🟡                                 |
+| Formal TC                      | 🟡                                 |
+| Mobile                         | ⏸️                                 |
+| Offline attendance             | ⏸️                                 |
+| Library                        | ⏸️                                 |
+| Transport                      | ⏸️                                 |
+| Payroll                        | ⏸️                                 |
+| AI gimmicks                    | ❌                                  |
+| Schema rewrite                 | ❌                                  |
+| Test-data deletion             | **NOT NOW**                        |
+
+**So the first thing we should actually change is the public Students/Class Materials exposure, and after that the migration/schema baseline.** Everything else should follow this order rather than making random changes across the codebase. The current project explicitly treats migration truth, RLS, import idempotency, year-end and parent correctness as the priority before the next major modules. 
