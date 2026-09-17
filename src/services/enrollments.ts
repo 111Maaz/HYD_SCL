@@ -364,6 +364,28 @@ export async function processYearEndBatch(input: {
   const client = requireSupabase();
   let processed = 0;
 
+  if (input.action !== "COMPLETED") {
+    if (!input.toYearId || input.toYearId === input.fromYearId) {
+      throw new Error("Select a later academic year for promotion or repetition.");
+    }
+
+    const { data: targetYear, error: targetYearError } = await client
+      .from("academic_years")
+      .select("start_date")
+      .eq("id", input.toYearId)
+      .maybeSingle();
+    const { data: sourceYear, error: sourceYearError } = await client
+      .from("academic_years")
+      .select("start_date")
+      .eq("id", input.fromYearId)
+      .maybeSingle();
+
+    if (targetYearError || sourceYearError || !targetYear || !sourceYear ||
+        targetYear.start_date <= sourceYear.start_date) {
+      throw new Error("The target must be an existing academic year later than the source year.");
+    }
+  }
+
   for (const enrollmentId of input.enrollmentIds) {
     const { data: existing, error: loadError } = await client
       .from("enrollments")

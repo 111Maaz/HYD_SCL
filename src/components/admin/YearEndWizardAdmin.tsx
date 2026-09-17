@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { GraduationCap, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -48,6 +49,22 @@ export function YearEndWizardAdmin() {
     queryKey: ["admin", "academic-years"],
     queryFn: fetchAcademicYears,
   });
+
+  const fromYear = years.find((year) => year.id === fromYearId);
+  const futureYears = useMemo(
+    () => fromYear
+      ? years
+          .filter((year) => year.start_date > fromYear.start_date)
+          .sort((a, b) => a.start_date.localeCompare(b.start_date))
+      : [],
+    [fromYear, years],
+  );
+
+  useEffect(() => {
+    setToYearId((current) =>
+      futureYears.some((year) => year.id === current) ? current : (futureYears[0]?.id ?? ""),
+    );
+  }, [futureYears]);
 
   const { data: enrollments = [], isLoading: enrollLoading } = useQuery({
     queryKey: ["admin", "year-end", fromYearId],
@@ -102,18 +119,27 @@ export function YearEndWizardAdmin() {
         </div>
         <div className="space-y-2">
           <Label>To year</Label>
-          <Select value={toYearId} onValueChange={setToYearId}>
+          <Select value={toYearId} onValueChange={setToYearId} disabled={!fromYearId || futureYears.length === 0}>
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Next year" />
             </SelectTrigger>
             <SelectContent>
-              {years.map((y) => (
+              {futureYears.map((y) => (
                 <SelectItem key={y.id} value={y.id}>
                   {y.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+          {fromYearId && futureYears.length === 0 && action !== "COMPLETED" ? (
+            <p className="max-w-xs text-sm text-muted-foreground">
+              Create the next academic year in{" "}
+              <Link to="/admin/academic-years" className="text-primary underline">
+                Academic Years
+              </Link>
+              , then set up its classes and sections before promoting students.
+            </p>
+          ) : null}
         </div>
         <div className="space-y-2">
           <Label>Action</Label>
@@ -147,7 +173,11 @@ export function YearEndWizardAdmin() {
       </div>
 
       {!fromYearId ? (
-        <AdminErrorState message="Select the closing academic year to load enrollments." />
+        <Card>
+          <CardContent className="py-6 text-sm text-muted-foreground">
+            Select the closing academic year to load enrollments.
+          </CardContent>
+        </Card>
       ) : enrollLoading ? (
         <AdminLoadingState label="Loading enrollments…" />
       ) : (
@@ -200,7 +230,7 @@ export function YearEndWizardAdmin() {
               className="mt-4"
               disabled={
                 selected.size === 0 ||
-                (action !== "COMPLETED" && !toYearId) ||
+                (action !== "COMPLETED" && !futureYears.some((year) => year.id === toYearId)) ||
                 processMutation.isPending
               }
               onClick={() => processMutation.mutate()}
