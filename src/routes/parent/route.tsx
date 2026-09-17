@@ -34,33 +34,34 @@ function ParentLayout() {
 }
 
 function ParentShell() {
-  const { auth, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen portal-shell-bg">
+    <div className="min-h-screen min-w-0 portal-shell-bg">
       <header className="border-b border-border/60 bg-card/95 shadow-sm backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-          <div>
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-3 px-4 py-3 sm:flex-nowrap">
+          <div className="min-w-0 flex-1 sm:flex-none">
             <p className="text-xs uppercase tracking-wider text-muted-foreground">{SITE.name}</p>
             <p className="font-semibold">Parent portal</p>
           </div>
-          <div className="flex items-center gap-3">
+          <nav className="order-3 grid w-full grid-cols-2 gap-2 border-t border-border/50 pt-3 sm:order-2 sm:ml-auto sm:flex sm:w-auto sm:border-0 sm:pt-0" aria-label="Parent portal">
             <Link
               to="/parent/children"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+              className="inline-flex min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-sm font-medium text-primary hover:bg-muted/60 sm:py-1"
             >
-              <Users className="size-4" />
+              <Users className="size-4 shrink-0" />
               My Children
             </Link>
             <Link
               to="/parent/account"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+              className="inline-flex min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-sm font-medium text-primary hover:bg-muted/60 sm:py-1"
             >
-              <User className="size-4" />
+              <User className="size-4 shrink-0" />
               Account
             </Link>
-            <span className="hidden text-sm text-muted-foreground sm:inline">{auth?.email}</span>
+          </nav>
+          <div className="order-2 shrink-0 sm:order-3">
             <Button
               variant="outline"
               size="sm"
@@ -74,7 +75,7 @@ function ParentShell() {
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-6 sm:py-8">
+      <main className="mx-auto w-full min-w-0 max-w-6xl px-4 py-6 sm:py-8">
         <Outlet />
       </main>
     </div>

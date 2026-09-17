@@ -24,55 +24,73 @@ import {
 import { fetchLinkedChildrenForCurrentParent } from "@/services/guardians";
 
 export function ParentChildDetail({ studentId }: { studentId: string }) {
-  const { data: childLink } = useQuery({
+  const { data: childLink, isLoading: linksLoading, error: linksError } = useQuery({
     queryKey: ["parent", "children"],
     queryFn: fetchLinkedChildrenForCurrentParent,
   });
 
   const link = childLink?.find((c) => c.id === studentId)?.link;
 
-  const { data: student, isLoading } = useQuery({
+  const { data: student, isLoading, error: studentError } = useQuery({
     queryKey: ["parent", "child", studentId],
     queryFn: () => fetchParentChildProfile(studentId),
   });
 
-  const { data: attendance = [] } = useQuery({
+  const { data: attendance = [], error: attendanceError } = useQuery({
     queryKey: ["parent", "child-attendance", studentId],
     queryFn: () => fetchParentChildAttendance(studentId),
     enabled: !!link?.can_view_attendance,
   });
 
-  const { data: fees } = useQuery({
+  const { data: fees, error: feesError } = useQuery({
     queryKey: ["parent", "child-fees", studentId],
     queryFn: () => fetchParentChildFees(studentId),
     enabled: !!link?.can_view_fees,
   });
 
-  const { data: enrollment } = useQuery({
+  const { data: enrollment, error: enrollmentError } = useQuery({
     queryKey: ["parent", "child-enrollment", studentId],
     queryFn: () => fetchParentChildEnrollment(studentId),
     enabled: !!link?.can_view_academic_data,
   });
 
-  if (isLoading || !student) {
+  if (linksLoading || isLoading) {
     return <p className="text-sm text-muted-foreground">Loading child details…</p>;
+  }
+
+  if (linksError || studentError || !link || !student) {
+    return (
+      <div className="space-y-4">
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/parent/children"><ArrowLeft className="size-4" />Back to My Children</Link>
+        </Button>
+        <p role="alert" className="text-sm text-destructive">
+          {linksError instanceof Error ? linksError.message :
+            studentError instanceof Error ? studentError.message :
+              "This child is not linked to your account."}
+        </p>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 items-center gap-3">
         <Button variant="ghost" size="sm" asChild>
           <Link to="/parent/children">
             <ArrowLeft className="size-4" />
             Back
           </Link>
         </Button>
-        <div>
-          <h1 className="text-2xl font-semibold">{getStudentDisplayName(student)}</h1>
-          <p className="font-mono text-sm text-muted-foreground">{student.student_number}</p>
+        <div className="min-w-0">
+          <h1 className="break-words text-2xl font-semibold">{getStudentDisplayName(student)}</h1>
+          <p className="break-all font-mono text-sm text-muted-foreground">{student.student_number}</p>
         </div>
       </div>
 
+      {link.can_view_academic_data && enrollmentError ? (
+        <p role="alert" className="text-sm text-destructive">Unable to load enrollment details.</p>
+      ) : null}
       {enrollment ? (
         <Card>
           <CardHeader>
@@ -88,7 +106,7 @@ export function ParentChildDetail({ studentId }: { studentId: string }) {
         </Card>
       ) : null}
 
-      {link?.can_view_attendance ? (
+      {link.can_view_attendance ? (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -98,7 +116,9 @@ export function ParentChildDetail({ studentId }: { studentId: string }) {
             <CardDescription>Recent attendance for the active academic year.</CardDescription>
           </CardHeader>
           <CardContent>
-            {attendance.length === 0 ? (
+            {attendanceError ? (
+              <p role="alert" className="text-sm text-destructive">Unable to load attendance.</p>
+            ) : attendance.length === 0 ? (
               <p className="text-sm text-muted-foreground">No attendance records yet.</p>
             ) : (
               <Table>
@@ -126,7 +146,7 @@ export function ParentChildDetail({ studentId }: { studentId: string }) {
         </Card>
       ) : null}
 
-      {link?.can_view_fees ? (
+      {link.can_view_fees ? (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
@@ -136,6 +156,10 @@ export function ParentChildDetail({ studentId }: { studentId: string }) {
             <CardDescription>Charges, payments, and outstanding balance.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {feesError ? (
+              <p role="alert" className="text-sm text-destructive">Unable to load fee details.</p>
+            ) : (
+              <>
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="rounded-lg border p-3">
                 <p className="text-xs text-muted-foreground">Total charges</p>
@@ -177,6 +201,8 @@ export function ParentChildDetail({ studentId }: { studentId: string }) {
               </Table>
             ) : (
               <p className="text-sm text-muted-foreground">No payments recorded yet.</p>
+            )}
+              </>
             )}
           </CardContent>
         </Card>
