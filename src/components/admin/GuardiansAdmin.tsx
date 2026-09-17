@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link2, Pencil, Plus, Search, Unlink, UserPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -104,18 +104,20 @@ export function GuardiansAdmin() {
   const [unlinkTarget, setUnlinkTarget] = useState<LinkedStudentSummary | null>(null);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setDebouncedSearch(search), 300);
+    const timer = window.setTimeout(() => setDebouncedSearch(search), 600);
     return () => window.clearTimeout(timer);
   }, [search]);
 
   const {
     data: guardians = [],
     isLoading,
+    isFetching,
     isError,
     error,
   } = useQuery({
     queryKey: ["admin", "guardians", debouncedSearch],
     queryFn: () => fetchGuardians(debouncedSearch),
+    placeholderData: keepPreviousData,
   });
 
   const { data: students = [] } = useQuery({
@@ -286,6 +288,9 @@ export function GuardiansAdmin() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        {isFetching && !isLoading ? (
+          <p className="mt-1 text-xs text-muted-foreground" role="status">Searching guardians…</p>
+        ) : null}
       </div>
 
       {guardians.length === 0 ? (
