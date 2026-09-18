@@ -14,6 +14,32 @@ export type StaffStatus = (typeof STAFF_STATUSES)[number];
 export type Database = {
   public: {
     Tables: {
+      enrollment_progression_maps: {
+        Row: {
+          id: string;
+          from_year_id: string;
+          to_year_id: string;
+          action: "PROMOTED" | "REPEATED";
+          source_class_year_id: string;
+          source_section_id: string;
+          target_class_year_id: string;
+          target_section_id: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          from_year_id: string;
+          to_year_id: string;
+          action: "PROMOTED" | "REPEATED";
+          source_class_year_id: string;
+          source_section_id: string;
+          target_class_year_id: string;
+          target_section_id: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["enrollment_progression_maps"]["Insert"]>;
+        Relationships: [];
+      };
       admission_enquiries: {
         Row: {
           id: string;
@@ -169,6 +195,32 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      run_year_end_transition: {
+        Args: {
+          p_from_year_id: string;
+          p_to_year_id: string | null;
+          p_action: string;
+          p_enrollment_ids: string[];
+          p_overrides?: Record<string, string>;
+          p_close_source?: boolean;
+          p_commit?: boolean;
+        };
+        Returns: {
+          selected: number;
+          eligible: number;
+          processed: number;
+          skipped: number;
+          blocked: boolean;
+          rows: Array<{
+            enrollmentId: string;
+            studentId: string | null;
+            sourceSectionId: string | null;
+            targetSectionId: string | null;
+            status: "ELIGIBLE" | "ERROR";
+            reason: string | null;
+          }>;
+        };
+      };
       get_app_role: {
         Args: Record<string, never>;
         Returns: string | null;
@@ -216,9 +268,7 @@ export function isStaffPortalActive(staff: Pick<StaffProfile, "status">): boolea
   return staff.status === "ACTIVE";
 }
 
-export function isStaffPubliclyVisible(
-  staff: Pick<StaffProfile, "is_public" | "status">,
-): boolean {
+export function isStaffPubliclyVisible(staff: Pick<StaffProfile, "is_public" | "status">): boolean {
   return staff.is_public && staff.status === "ACTIVE";
 }
 
