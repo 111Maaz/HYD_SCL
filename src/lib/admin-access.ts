@@ -23,6 +23,7 @@ export const ROLE_PORTAL_NAV = {
   ],
   ACADEMIC_INCHARGE: [
     { to: "/admin/academic-structure", label: "Academic home", icon: LayoutDashboard },
+    { to: "/admin/academic-years", label: "Academic years", icon: CalendarDays },
     { to: "/admin/students", label: "Students", icon: GraduationCap },
     { to: "/admin/guardians", label: "Guardians", icon: User },
     { to: "/admin/year-end", label: "Year-end", icon: GraduationCap },
